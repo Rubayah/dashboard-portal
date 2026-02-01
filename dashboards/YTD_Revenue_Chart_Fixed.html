@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTD Revenue Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; font-weight: 600; }
+        .header p { font-size: 1em; opacity: 0.95; font-weight: 300; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 30px; background: #fafbfc; }
+        .metric-card { background: white; border-radius: 10px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid; }
+        .metric-card.customers { border-left-color: #3b82f6; }
+        .metric-card.revenue { border-left-color: #10b981; }
+        .metric-card.product { border-left-color: #8b5cf6; }
+        .metric-card.consumables { border-left-color: #f59e0b; }
+        .metric-label { font-size: 0.85em; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
+        .metric-value { font-size: 2em; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+        .metric-subtitle { font-size: 0.85em; color: #64748b; display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
+        .metric-subtitle strong { color: #334155; font-size: 1.05em; margin-top: 4px; }
+        .charts-section { padding: 30px; }
+        .chart-container { background: white; border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .chart-title { font-size: 1.3em; color: #1e293b; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; }
+        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; margin: 30px; border-radius: 10px; }
+        .insights h2 { font-size: 1.6em; margin-bottom: 20px; font-weight: 600; }
+        .insights ul { list-style: none; padding-left: 0; }
+        .insights li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 1em; line-height: 1.7; font-weight: 300; }
+        .insights li:before { content: "→"; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        .insights li strong { font-weight: 600; }
+        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>YTD Revenue Analysis</h1>
+            <p>April 2025 - December 2025</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card customers">
+                <div class="metric-label">Total Customers</div>
+                <div class="metric-value">265</div>
+                <div class="metric-subtitle">
+                    <span><small>MEA Focus</small><br><strong>113 (43%)</strong></span>
+                    <span><small>RC MEA</small><br><strong>152 (57%)</strong></span>
+                </div>
+            </div>
+            
+            <div class="metric-card revenue">
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">₹495.2M</div>
+                <div class="metric-subtitle">
+                    <span><small>MEA Focus</small><br><strong>₹301.7M (61%)</strong></span>
+                    <span><small>RC MEA</small><br><strong>₹193.5M (39%)</strong></span>
+                </div>
+            </div>
+            
+            <div class="metric-card product">
+                <div class="metric-label">Product + PS Revenue</div>
+                <div class="metric-value">₹433.2M</div>
+                <div class="metric-subtitle">
+                    <span><small>87.5% of total</small><br><strong>Core offering</strong></span>
+                    <span><small>Focus: 59%</small><br><strong>RC: 41%</strong></span>
+                </div>
+            </div>
+            
+            <div class="metric-card consumables">
+                <div class="metric-label">Consumables Revenue</div>
+                <div class="metric-value">₹62.0M</div>
+                <div class="metric-subtitle">
+                    <span><small>12.5% of total</small><br><strong>Growth area</strong></span>
+                    <span><small>Focus: 77%</small><br><strong>RC: 23%</strong></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-title">Monthly Revenue Trend - Focus vs RC</div>
+                <canvas id="monthlyRevenueChart" height="80"></canvas>
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Revenue Mix</div>
+                    <canvas id="revenueBreakdownChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Focus vs RC Distribution</div>
+                    <canvas id="focusVsRcChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Month-over-Month Growth Rate</div>
+                <canvas id="growthRateChart" height="80"></canvas>
+            </div>
+        </div>
+        
+        <div class="insights">
+            <h2>Key Insights</h2>
+            <ul>
+                <li><strong>Strong Growth:</strong> Revenue grew from ₹45.1M (April) to ₹68.9M (December), a 53% increase.</li>
+                <li><strong>MEA Focus Dominance:</strong> MEA Focus contributes 61% of revenue despite being 43% of customers (higher ARPU).</li>
+                <li><strong>Product+PS Focus:</strong> Product and Professional Services make up 87.5% (₹433.2M), showing strong core offering.</li>
+                <li><strong>Consumables Opportunity:</strong> Consumables at ₹62.0M (12.5%) presents growth area, especially in RC MEA.</li>
+                <li><strong>Consistent Performance:</strong> Both segments showed steady growth with December as peak month.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const colors = { focus: '#3b82f6', rc: '#8b5cf6', total: '#10b981' };
+        
+        // Monthly Revenue Trend
+        new Chart(document.getElementById('monthlyRevenueChart'), {
+            type: 'line',
+            data: {
+                labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'MEA Focus',
+                        data: [26.5, 28.9, 27.8, 26.8, 30.5, 35.6, 37.9, 41.2, 46.4],
+                        borderColor: colors.focus,
+                        backgroundColor: colors.focus + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'RC MEA',
+                        data: [18.6, 20.0, 20.3, 21.3, 22.1, 22.2, 23.0, 23.5, 22.4],
+                        borderColor: colors.rc,
+                        backgroundColor: colors.rc + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Total',
+                        data: [45.1, 49.0, 48.1, 48.1, 52.7, 57.8, 60.8, 64.8, 68.9],
+                        borderColor: colors.total,
+                        backgroundColor: colors.total + '15',
+                        borderWidth: 4,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        borderDash: [8, 4]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    tooltip: {
+                        mode: 'index',
+                        callbacks: { label: context => context.dataset.label + ': ₹' + context.parsed.y.toFixed(1) + 'M' }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+        
+        // Revenue Mix
+        new Chart(document.getElementById('revenueBreakdownChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Product + PS', 'Consumables'],
+                datasets: [{
+                    data: [433.2, 62.0],
+                    backgroundColor: [colors.focus + 'dd', '#f59e0b' + 'dd'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                const pct = ((context.parsed / 495.2) * 100).toFixed(1);
+                                return context.label + ': ₹' + context.parsed.toFixed(1) + 'M (' + pct + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Focus vs RC
+        new Chart(document.getElementById('focusVsRcChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['MEA Focus', 'RC MEA'],
+                datasets: [{
+                    data: [301.7, 193.5],
+                    backgroundColor: [colors.focus + 'dd', colors.rc + 'dd'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                const pct = ((context.parsed / 495.2) * 100).toFixed(1);
+                                return context.label + ': ₹' + context.parsed.toFixed(1) + 'M (' + pct + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Growth Rate
+        new Chart(document.getElementById('growthRateChart'), {
+            type: 'bar',
+            data: {
+                labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'MoM Growth %',
+                    data: [8.5, -1.7, -0.1, 9.5, 9.8, 5.3, 6.4, 6.3],
+                    backgroundColor: [
+                        colors.total + 'cc', '#ef4444cc', '#ef4444cc', colors.total + 'cc',
+                        colors.total + 'cc', colors.total + 'cc', colors.total + 'cc', colors.total + 'cc'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: context => 'Growth: ' + context.parsed.y.toFixed(1) + '%' } }
+                },
+                scales: {
+                    y: { ticks: { callback: value => value + '%' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

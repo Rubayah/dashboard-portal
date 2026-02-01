@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GC vs RC Growth Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+    --gc: #2563EB; --gc-light: #dbeafe; --gc-mid: #3b82f6;
+    --rc: #7c3aed; --rc-light: #ede9fe; --rc-mid: #8b5cf6;
+    --active: #16a34a; --churn: #dc2626; --paused: #ea580c; --locked: #9333ea;
+    --bg: #f0f4f8; --card: #fff; --text: #1e293b; --text-muted: #64748b;
+    --border: #e2e8f0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); padding:24px; }
+.page { max-width:1500px; margin:0 auto; }
+
+/* Header */
+.header { background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color:#fff; border-radius:16px; padding:32px 36px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size:1.9em; font-weight:700; letter-spacing:-0.5px; }
+.header p { color:#94a3b8; font-size:0.9em; margin-top:4px; }
+.header-badge { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:12px 20px; text-align:right; }
+.header-badge .label { font-size:0.7em; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; }
+.header-badge .val { font-size:1.4em; font-weight:700; margin-top:2px; }
+
+/* Segment Compare Cards */
+.seg-compare { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+.seg-card { background:var(--card); border-radius:14px; padding:22px 24px; box-shadow:0 1px 4px rgba(0,0,0,0.06); border-top:4px solid; }
+.seg-card.gc { border-top-color:var(--gc); }
+.seg-card.rc { border-top-color:var(--rc); }
+.seg-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.seg-card-header h2 { font-size:1.1em; font-weight:700; display:flex; align-items:center; gap:8px; }
+.seg-card-header h2 .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.gc .dot { background:var(--gc); } .rc .dot { background:var(--rc); }
+.seg-card-header .growth-badge { font-size:0.72em; font-weight:600; padding:3px 8px; border-radius:6px; }
+.growth-pos { background:#dcfce7; color:#16a34a; }
+.growth-neg { background:#fee2e2; color:#dc2626; }
+.seg-rev-row { display:flex; gap:12px; margin-bottom:14px; }
+.seg-rev-item { flex:1; background:#f8fafc; border-radius:8px; padding:10px 12px; }
+.seg-rev-item .lbl { font-size:0.65em; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; font-weight:600; }
+.seg-rev-item .val { font-size:1.15em; font-weight:700; margin-top:2px; }
+.seg-rev-item .val.total { color:var(--text); }
+.seg-rev-item .val.prod { color:var(--gc); }
+.seg-rev-item .val.cons { color:#d97706; }
+/* Status pills */
+.status-row { display:flex; gap:8px; flex-wrap:wrap; }
+.status-pill { display:flex; align-items:center; gap:5px; font-size:0.7em; font-weight:600; padding:4px 9px; border-radius:20px; }
+.status-pill .cnt { font-size:1.15em; }
+.pill-active { background:#dcfce7; color:#16a34a; }
+.pill-churn { background:#fee2e2; color:#dc2626; }
+.pill-paused { background:#ffedd5; color:#ea580c; }
+.pill-locked { background:#ede9fe; color:#9333ea; }
+
+/* Section titles */
+.section-title { font-size:1em; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+.section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* Charts grid */
+.charts-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+.chart-card { background:var(--card); border-radius:14px; padding:22px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.chart-card.full { grid-column:1/-1; }
+.chart-card h3 { font-size:0.88em; font-weight:600; color:var(--text-muted); margin-bottom:16px; display:flex; align-items:center; gap:6px; }
+.chart-card h3 .ci { width:8px; height:8px; border-radius:50%; display:inline-block; }
+
+/* CSM Scorecard Table */
+.table-wrap { background:var(--card); border-radius:14px; box-shadow:0 1px 4px rgba(0,0,0,0.06); overflow:hidden; margin-bottom:24px; }
+.table-wrap h3 { font-size:0.88em; font-weight:600; color:var(--text-muted); padding:18px 22px 0; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.table-wrap h3 .ci { width:8px; height:8px; border-radius:50%; display:inline-block; }
+table { width:100%; border-collapse:collapse; font-size:0.78em; }
+thead th { background:#f1f5f9; color:var(--text-muted); font-weight:600; text-align:right; padding:9px 14px; border-bottom:2px solid var(--border); font-size:0.85em; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+thead th:first-child, thead th:nth-child(2) { text-align:left; }
+tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
+tbody tr:hover { background:#f8fafc; }
+tbody td { padding:9px 14px; text-align:right; color:var(--text); }
+tbody td:first-child { text-align:left; font-weight:600; }
+tbody td:nth-child(2) { text-align:left; }
+.seg-tag { display:inline-block; font-size:0.75em; font-weight:700; padding:2px 7px; border-radius:4px; }
+.seg-tag.gc { background:var(--gc-light); color:var(--gc); }
+.seg-tag.rc { background:var(--rc-light); color:var(--rc); }
+.mini-pills { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
+.mp { font-size:0.82em; font-weight:600; padding:2px 6px; border-radius:4px; }
+.mp-a { background:#dcfce7; color:#16a34a; }
+.mp-c { background:#fee2e2; color:#dc2626; }
+.mp-p { background:#ffedd5; color:#ea580c; }
+.mp-l { background:#ede9fe; color:#9333ea; }
+.trend-spark { display:flex; align-items:flex-end; gap:1.5px; height:22px; justify-content:flex-end; }
+.trend-spark .bar { width:4px; border-radius:1px; min-height:2px; }
+.highlight-row { background:#f0f7ff !important; }
+.highlight-row td:first-child::before { content:'★ '; color:#d97706; }
+
+/* Insights box */
+.insights { background:linear-gradient(135deg,#0f172a,#1e293b); color:#fff; border-radius:14px; padding:28px 30px; margin-bottom:24px; }
+.insights h2 { font-size:1.05em; font-weight:600; margin-bottom:14px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; }
+.insights-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.insight-item { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; }
+.insight-item .it-label { font-size:0.68em; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; font-weight:600; margin-bottom:4px; }
+.insight-item .it-text { font-size:0.82em; line-height:1.5; color:#cbd5e1; }
+.insight-item .it-text strong { color:#fff; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- Header -->
+<div class="header">
+    <div>
+        <h1>GC vs RC — Growth & Health Analysis</h1>
+        <p>April – December 2025 | MEA Region | Per-CSM Breakdown</p>
+    </div>
+    <div class="header-badge">
+        <div class="label">Total Portfolio</div>
+        <div class="val">₹495.2M | 260 Accounts | 23 CSMs</div>
+    </div>
+</div>
+
+<!-- Segment Compare Cards -->
+<div class="seg-compare" id="segCards"></div>
+
+<!-- Charts -->
+<div class="section-title">Revenue Growth Trends</div>
+<div class="charts-row">
+    <div class="chart-card">
+        <h3><span class="ci" style="background:var(--gc)"></span> GC — Monthly Revenue</h3>
+        <canvas id="gcChart" height="140"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3><span class="ci" style="background:var(--rc)"></span> RC — Monthly Revenue</h3>
+        <canvas id="rcChart" height="140"></canvas>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card full">
+        <h3><span class="ci" style="background:var(--gc)"></span> GC vs RC — Total Revenue Comparison</h3>
+        <canvas id="compareChart" height="90"></canvas>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3><span class="ci" style="background:#d97706"></span> Consumables — GC vs RC</h3>
+        <canvas id="consChart" height="140"></canvas>
+    </div>
+    <div class="chart-card full">
+        <h3><span class="ci" style="background:var(--churn)"></span> Account Health by CSM — sorted by Active accounts (GC: 14 CSMs | RC: 9 CSMs | 23 total)</h3>
+        <canvas id="healthChart" height="110"></canvas>
+    </div>
+</div>
+
+<!-- CSM Scorecard -->
+<div class="section-title">CSM Scorecard</div>
+<div class="table-wrap" id="csmTable"></div>
+
+<!-- Insights -->
+<div class="insights" id="insightsBox"></div>
+
+</div><!-- /page -->
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const months = ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const gc = {
+    total:[26.47,28.76,27.66,26.65,30.53,35.61,37.83,41.19,46.0],
+    prod:[22.91,24.37,22.76,23.08,27.27,28.95,32.29,34.22,37.15],
+    cons:[3.56,4.39,4.91,3.58,3.27,6.66,5.54,6.97,8.86]
+};
+const rc = {
+    total:[18.65,20.04,20.31,21.27,22.13,22.2,23.0,23.51,22.42],
+    prod:[16.94,17.92,17.63,19.25,21.08,21.06,22.01,22.11,21.26],
+    cons:[1.71,2.13,2.68,2.02,1.04,1.14,0.98,1.4,1.16]
+};
+const gc_status = {Active:89,'Pause Billing':3,'Lockin period':2,Churn:13};
+const rc_status = {Active:131,'Lockin period':1,'Pause Billing':6,Churn:13};
+
+const csms = [
+    {seg:'RC',csm:'Aman Singh',count:67,active:63,churn:3,paused:1,locked:0,total:[11.13,11.79,11.25,11.64,12.23,12.32,12.49,12.77,12.24],prod:[10.01,10.47,9.64,10.78,11.9,11.85,12.29,12.48,12.09],cons:[1.12,1.32,1.61,0.86,0.33,0.47,0.2,0.29,0.15],ytd_total:107.85,ytd_prod:101.5,ytd_cons:6.34},
+    {seg:'GC',csm:'Princy Choudhary',count:12,active:10,churn:2,paused:0,locked:0,total:[4.43,4.65,5.41,3.74,5.48,5.57,8.14,11.0,13.67],prod:[4.37,4.4,4.54,3.15,4.87,5.02,7.58,10.59,13.01],cons:[0.06,0.24,0.87,0.59,0.61,0.55,0.57,0.41,0.66],ytd_total:62.09,ytd_prod:57.52,ytd_cons:4.56},
+    {seg:'GC',csm:'Sidharth Sanjeev',count:20,active:15,churn:3,paused:1,locked:1,total:[4.23,4.34,4.6,4.61,5.32,5.9,6.55,7.14,9.11],prod:[3.14,3.24,3.2,3.83,4.54,5.22,5.55,5.71,5.77],cons:[1.09,1.1,1.4,0.78,0.78,0.68,1.0,1.44,3.34],ytd_total:51.8,ytd_prod:40.2,ytd_cons:11.6},
+    {seg:'GC',csm:'Aditi Jannu',count:13,active:8,churn:4,paused:1,locked:0,total:[4.07,4.14,3.67,4.04,4.29,4.5,4.98,5.04,4.74],prod:[4.04,4.09,3.63,4.0,4.21,4.42,4.79,4.9,4.45],cons:[0.04,0.06,0.04,0.04,0.08,0.08,0.19,0.14,0.3],ytd_total:39.48,ytd_prod:38.52,ytd_cons:0.96},
+    {seg:'GC',csm:'Rohan Ratna',count:15,active:14,churn:0,paused:1,locked:0,total:[3.48,3.79,2.92,2.95,3.78,4.57,4.05,4.18,4.63],prod:[2.83,3.13,2.45,2.42,3.08,3.21,3.14,3.28,3.36],cons:[0.65,0.66,0.47,0.52,0.7,1.37,0.91,0.9,1.26],ytd_total:34.34,ytd_prod:26.9,ytd_cons:7.44},
+    {seg:'GC',csm:'Ankita Shinde',count:13,active:13,churn:0,paused:0,locked:0,total:[3.11,2.58,2.42,2.9,2.34,2.88,4.33,4.55,4.62],prod:[2.46,2.2,2.11,2.52,2.17,2.43,2.82,2.7,2.99],cons:[0.65,0.38,0.31,0.38,0.18,0.45,1.5,1.85,1.64],ytd_total:29.73,ytd_prod:22.4,ytd_cons:7.33},
+    {seg:'GC',csm:'Mark Brian',count:7,active:6,churn:1,paused:0,locked:0,total:[3.34,3.49,3.54,3.2,3.21,3.25,3.23,1.58,1.61],prod:[3.01,2.96,3.03,3.09,3.12,3.15,3.09,1.47,1.48],cons:[0.33,0.53,0.52,0.11,0.08,0.1,0.13,0.11,0.13],ytd_total:26.45,ytd_prod:24.41,ytd_cons:2.04},
+    {seg:'RC',csm:'Dashmesh Singh',count:27,active:22,churn:3,paused:1,locked:1,total:[2.58,2.52,2.58,2.76,2.98,2.83,3.13,3.07,2.98],prod:[2.36,2.44,2.43,2.63,2.87,2.77,2.98,2.98,2.88],cons:[0.22,0.09,0.15,0.14,0.11,0.06,0.16,0.1,0.1],ytd_total:25.44,ytd_prod:24.33,ytd_cons:1.12},
+    {seg:'RC',csm:'Himanshi Verma',count:22,active:20,churn:0,paused:2,locked:0,total:[1.5,1.62,2.29,2.38,2.55,2.84,2.7,3.23,3.21],prod:[1.49,1.6,2.24,2.13,2.45,2.61,2.6,2.79,2.74],cons:[0.01,0.03,0.04,0.25,0.1,0.22,0.1,0.43,0.47],ytd_total:22.32,ytd_prod:20.65,ytd_cons:1.66},
+    {seg:'GC',csm:'Rishika Sharma',count:6,active:5,churn:1,paused:0,locked:0,total:[1.45,3.42,2.38,2.21,2.19,2.59,2.4,2.36,2.3],prod:[1.12,2.23,1.59,1.66,1.72,1.92,1.74,1.74,1.75],cons:[0.34,1.19,0.79,0.55,0.46,0.68,0.66,0.62,0.56],ytd_total:21.3,ytd_prod:15.47,ytd_cons:5.83},
+    {seg:'GC',csm:'Saurabh Yadav',count:6,active:6,churn:0,paused:0,locked:0,total:[1.47,1.31,1.58,1.81,2.68,3.31,2.78,3.17,2.88],prod:[1.06,1.08,1.08,1.21,2.54,2.56,2.56,2.67,2.63],cons:[0.4,0.24,0.5,0.6,0.13,0.74,0.22,0.5,0.26],ytd_total:20.99,ytd_prod:17.39,ytd_cons:3.6},
+    {seg:'RC',csm:'Vineet Jain',count:8,active:4,churn:3,paused:1,locked:0,total:[1.91,1.81,1.68,1.72,1.68,1.64,1.66,1.64,1.63],prod:[1.81,1.69,1.57,1.6,1.63,1.59,1.6,1.58,1.54],cons:[0.1,0.12,0.11,0.11,0.05,0.05,0.06,0.06,0.09],ytd_total:15.37,ytd_prod:14.6,ytd_cons:0.77},
+    {seg:'RC',csm:'Philip Mathew',count:9,active:8,churn:0,paused:1,locked:0,total:[0.72,0.91,0.91,0.85,1.11,1.05,1.42,1.28,0.98],prod:[0.54,0.7,0.71,0.76,0.85,0.87,1.14,0.97,0.69],cons:[0.19,0.2,0.2,0.09,0.26,0.18,0.28,0.32,0.29],ytd_total:9.23,ytd_prod:7.23,ytd_cons:2.0},
+    {seg:'RC',csm:'Divya Shivakumar',count:10,active:7,churn:3,paused:0,locked:0,total:[0.45,1.01,1.18,1.48,0.97,0.93,0.95,0.98,0.89],prod:[0.41,0.69,0.66,0.95,0.83,0.82,0.84,0.86,0.85],cons:[0.04,0.32,0.52,0.53,0.14,0.11,0.12,0.12,0.04],ytd_total:8.84,ytd_prod:6.9,ytd_cons:1.94},
+    {seg:'RC',csm:'Simran Kapoor',count:6,active:6,churn:0,paused:0,locked:0,total:[0.27,0.29,0.35,0.36,0.42,0.37,0.42,0.43,0.4],prod:[0.24,0.25,0.3,0.32,0.37,0.32,0.35,0.35,0.38],cons:[0.03,0.04,0.04,0.04,0.04,0.05,0.06,0.08,0.02],ytd_total:3.3,ytd_prod:2.89,ytd_cons:0.41},
+    {seg:'GC',csm:'Rajas Bhagat',count:2,active:2,churn:0,paused:0,locked:0,total:[0.23,0.24,0.3,0.3,0.31,0.31,0.31,0.31,0.31],prod:[0.22,0.24,0.29,0.3,0.3,0.3,0.3,0.3,0.31],cons:[0.01,0.01,0.0,0.01,0.01,0.01,0.0,0.0,0.0],ytd_total:2.61,ytd_prod:2.56,ytd_cons:0.05},
+    {seg:'GC',csm:'Vipin Aniyath',count:1,active:1,churn:0,paused:0,locked:0,total:[0.25,0.26,0.26,0.27,0.29,0.27,0.28,0.35,0.28],prod:[0.25,0.26,0.26,0.26,0.26,0.27,0.27,0.27,0.27],cons:[0.0,0.0,0.0,0.0,0.02,0.0,0.01,0.08,0.01],ytd_total:2.49,ytd_prod:2.37,ytd_cons:0.13},
+    {seg:'GC',csm:'Aarushi Handa',count:6,active:6,churn:0,paused:0,locked:0,total:[0.0,0.0,0.0,0.02,0.1,0.1,0.1,0.72,0.86],prod:[0.0,0.0,0.0,0.02,0.1,0.1,0.1,0.22,0.78],cons:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.5,0.09],ytd_total:1.9,ytd_prod:1.31,ytd_cons:0.59},
+    {seg:'GC',csm:'Tushar Omprakash',count:4,active:2,churn:2,paused:0,locked:0,total:[0.15,0.15,0.15,0.15,0.15,0.16,0.16,0.16,0.16],prod:[0.15,0.15,0.15,0.15,0.15,0.16,0.16,0.16,0.16],cons:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],ytd_total:1.39,ytd_prod:1.39,ytd_cons:0.0},
+    {seg:'GC',csm:'Himank Goyal',count:1,active:0,churn:0,paused:0,locked:1,total:[0.25,0.26,0.26,0.26,0.0,0.0,0.0,0.0,0.0],prod:[0.25,0.26,0.26,0.26,0.0,0.0,0.0,0.0,0.0],cons:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],ytd_total:1.03,ytd_prod:1.03,ytd_cons:0.0},
+    {seg:'RC',csm:'Padmini Deshpande',count:1,active:0,churn:1,paused:0,locked:0,total:[0.08,0.08,0.08,0.09,0.09,0.09,0.09,0.09,0.09],prod:[0.08,0.08,0.08,0.09,0.09,0.09,0.09,0.09,0.09],cons:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],ytd_total:0.78,ytd_prod:0.78,ytd_cons:0.0},
+    {seg:'GC',csm:'Saharsh Jhawar',count:1,active:1,churn:0,paused:0,locked:0,total:[0.0,0.13,0.18,0.19,0.41,2.21,0.54,0.63,0.82],prod:[0.0,0.13,0.18,0.19,0.19,0.21,0.21,0.21,0.21],cons:[0.0,0.0,0.0,0.0,0.22,2.0,0.33,0.42,0.61],ytd_total:5.11,ytd_prod:1.53,ytd_cons:3.58},
+    {seg:'RC',csm:'Saharsh Jhawar',count:1,active:1,churn:0,paused:0,locked:0,total:[0.0,0.0,0.0,0.0,0.11,0.13,0.13,0.03,0.0],prod:[0.0,0.0,0.0,0.0,0.1,0.13,0.13,0.03,0.0],cons:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],ytd_total:0.4,ytd_prod:0.4,ytd_cons:0.0}
+];
+
+// ═══════════════════════════════════════════════════════════
+// SEGMENT CARDS
+// ═══════════════════════════════════════════════════════════
+function renderSegCards() {
+    const gcGrowth = (((gc.total[8]-gc.total[0])/gc.total[0])*100).toFixed(1);
+    const rcGrowth = (((rc.total[8]-rc.total[0])/rc.total[0])*100).toFixed(1);
+    const gcYtd = '301.7';
+    const rcYtd = '193.5';
+    const gcProd = '253.0';
+    const rcProd = '179.3';
+    const gcCons = '47.7';
+    const rcCons = '14.3';
+
+    function pills(s) {
+        let html = '';
+        if(s.Active) html += `<span class="status-pill pill-active"><span class="cnt">${s.Active}</span> Active</span>`;
+        if(s.Churn) html += `<span class="status-pill pill-churn"><span class="cnt">${s.Churn}</span> Churned</span>`;
+        if(s['Pause Billing']) html += `<span class="status-pill pill-paused"><span class="cnt">${s['Pause Billing']}</span> Paused</span>`;
+        if(s['Lockin period']) html += `<span class="status-pill pill-locked"><span class="cnt">${s['Lockin period']}</span> Locked</span>`;
+        return html;
+    }
+    const totalAccounts = (gc_status.Active||0)+(gc_status.Churn||0)+(gc_status['Pause Billing']||0)+(gc_status['Lockin period']||0)
+                        + (rc_status.Active||0)+(rc_status.Churn||0)+(rc_status['Pause Billing']||0)+(rc_status['Lockin period']||0);
+
+    document.getElementById('segCards').innerHTML = `
+    <div class="seg-card gc">
+        <div class="seg-card-header">
+            <h2><span class="dot"></span> GC (MEA Focus)</h2>
+            <span class="growth-badge growth-pos">+${gcGrowth}% Apr→Dec</span>
+        </div>
+        <div class="seg-rev-row">
+            <div class="seg-rev-item"><div class="lbl">YTD Total</div><div class="val total">₹${gcYtd}M</div></div>
+            <div class="seg-rev-item"><div class="lbl">Product+PS</div><div class="val prod">₹${gcProd}M</div></div>
+            <div class="seg-rev-item"><div class="lbl">Consumables</div><div class="val cons">₹${gcCons}M</div></div>
+        </div>
+        <div class="status-row">${pills(gc_status)}</div>
+        <div style="margin-top:8px;font-size:0.7em;color:var(--text-muted);">107 accounts | Dec: ₹${gc.total[8]}M</div>
+    </div>
+    <div class="seg-card rc">
+        <div class="seg-card-header">
+            <h2><span class="dot"></span> RC (MEA)</h2>
+            <span class="growth-badge growth-pos">+${rcGrowth}% Apr→Dec</span>
+        </div>
+        <div class="seg-rev-row">
+            <div class="seg-rev-item"><div class="lbl">YTD Total</div><div class="val total">₹${rcYtd}M</div></div>
+            <div class="seg-rev-item"><div class="lbl">Product+PS</div><div class="val prod">₹${rcProd}M</div></div>
+            <div class="seg-rev-item"><div class="lbl">Consumables</div><div class="val cons">₹${rcCons}M</div></div>
+        </div>
+        <div class="status-row">${pills(rc_status)}</div>
+        <div style="margin-top:8px;font-size:0.7em;color:var(--text-muted);">151 accounts | Dec: ₹${rc.total[8]}M</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════════════
+const chartDefaults = {
+    responsive:true, maintainAspectRatio:true,
+    plugins:{legend:{display:true,position:'top',labels:{font:{size:11,weight:'600'},padding:14,usePointStyle:true}},
+             tooltip:{backgroundColor:'rgba(15,23,42,0.92)',padding:10,cornerRadius:8,titleFont:{size:11},bodyFont:{size:11}}},
+    scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},color:'#64748b'}},
+        y:{beginAtZero:true,ticks:{font:{size:10},color:'#64748b',callback:v=>'₹'+v+'M'},grid:{color:'#f1f5f9'}}
+    }
+};
+
+function segChart(id, segData, color, label) {
+    new Chart(document.getElementById(id), {
+        type:'line', data:{
+            labels:months,
+            datasets:[
+                {label:'Total',data:segData.total,borderColor:color,backgroundColor:color+'18',borderWidth:2.5,fill:true,tension:0.35,pointRadius:3,pointBackgroundColor:color},
+                {label:'Product+PS',data:segData.prod,borderColor:'#3b82f6',backgroundColor:'transparent',borderWidth:2,borderDash:[6,3],tension:0.35,pointRadius:2,pointBackgroundColor:'#3b82f6'},
+                {label:'Consumables',data:segData.cons,borderColor:'#d97706',backgroundColor:'transparent',borderWidth:2,borderDash:[3,3],tension:0.35,pointRadius:2,pointBackgroundColor:'#d97706'}
+            ]
+        },
+        options:{...chartDefaults,
+            plugins:{...chartDefaults.plugins,tooltip:{...chartDefaults.plugins.tooltip,mode:'index',callbacks:{label:c=>c.dataset.label+': ₹'+c.parsed.y.toFixed(1)+'M'}}},
+        }
+    });
+}
+
+function compareChart() {
+    new Chart(document.getElementById('compareChart'), {
+        type:'bar', data:{
+            labels:months,
+            datasets:[
+                {label:'GC Total',data:gc.total,backgroundColor:'#2563EB99',borderColor:'#2563EB',borderWidth:1.5,borderRadius:4},
+                {label:'RC Total',data:rc.total,backgroundColor:'#7c3aed99',borderColor:'#7c3aed',borderWidth:1.5,borderRadius:4}
+            ]
+        },
+        options:{...chartDefaults,
+            plugins:{...chartDefaults.plugins,tooltip:{...chartDefaults.plugins.tooltip,mode:'index',callbacks:{label:c=>c.dataset.label+': ₹'+c.parsed.y.toFixed(1)+'M'}}},
+        }
+    });
+}
+
+function consChart() {
+    new Chart(document.getElementById('consChart'), {
+        type:'line', data:{
+            labels:months,
+            datasets:[
+                {label:'GC Consumables',data:gc.cons,borderColor:'#2563EB',backgroundColor:'#2563EB18',borderWidth:2.5,fill:true,tension:0.35,pointRadius:3,pointBackgroundColor:'#2563EB'},
+                {label:'RC Consumables',data:rc.cons,borderColor:'#7c3aed',backgroundColor:'#7c3aed18',borderWidth:2.5,fill:true,tension:0.35,pointRadius:3,pointBackgroundColor:'#7c3aed'}
+            ]
+        },
+        options:{...chartDefaults,
+            plugins:{...chartDefaults.plugins,tooltip:{...chartDefaults.plugins.tooltip,mode:'index',callbacks:{label:c=>c.dataset.label+': ₹'+c.parsed.y.toFixed(2)+'M'}}},
+        }
+    });
+}
+
+function healthChart() {
+    // All 23 CSM entries (14 GC + 9 RC), sorted by active descending
+    const sorted = [...csms].sort((a,b)=> b.active - a.active);
+    // Labels: First initial + Last name + [Seg]
+    const labels = sorted.map(c=> { const parts=c.csm.replace(/\(.*\)/,'').trim().split(' '); return parts[0][0]+'.'+parts.slice(1).join(' ')+' ['+c.seg+']'; });
+    new Chart(document.getElementById('healthChart'), {
+        type:'bar',
+        data:{
+            labels: labels,
+            datasets:[
+                {label:'Active',  data:sorted.map(c=>c.active),  backgroundColor:'#16a34a88', borderColor:'#16a34a', borderWidth:1, borderRadius:2},
+                {label:'Churned', data:sorted.map(c=>c.churn),  backgroundColor:'#dc262688', borderColor:'#dc2626', borderWidth:1, borderRadius:2},
+                {label:'Paused',  data:sorted.map(c=>c.paused), backgroundColor:'#ea580c88', borderColor:'#ea580c', borderWidth:1, borderRadius:2},
+                {label:'Locked',  data:sorted.map(c=>c.locked), backgroundColor:'#9333ea88', borderColor:'#9333ea', borderWidth:1, borderRadius:2}
+            ]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:true,
+            plugins:{
+                legend:{display:true, position:'top', labels:{font:{size:10,weight:'600'},padding:14,usePointStyle:true}},
+                tooltip:{backgroundColor:'rgba(15,23,42,0.92)',padding:10,cornerRadius:8,titleFont:{size:10},bodyFont:{size:10},
+                    mode:'index',
+                    callbacks:{
+                        title: (items)=> {
+                            const idx = items[0].dataIndex;
+                            return sorted[idx].csm + ' [' + sorted[idx].seg + ']';
+                        },
+                        label: c=> c.dataset.label+': '+c.parsed.y
+                    }
+                }
+            },
+            scales:{
+                x:{
+                    stacked:false,
+                    grid:{display:false},
+                    ticks:{font:{size:7.5}, color:'#64748b', maxRotation:55, minRotation:40}
+                },
+                y:{
+                    beginAtZero:true,
+                    grid:{color:'#f1f5f9'},
+                    ticks:{font:{size:9}, color:'#64748b', callback:v=>v},
+                    title:{display:true, text:'Accounts', font:{size:9,weight:'600'}, color:'#64748b'}
+                }
+            }
+        }
+    });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CSM SCORECARD TABLE
+// ═══════════════════════════════════════════════════════════
+function renderTable() {
+    function spark(data) {
+        const max = Math.max(...data);
+        return data.map(v=>{
+            const h = Math.max(2, (v/max)*22);
+            const trend = v >= data[0] ? '#16a34a' : '#dc2626';
+            return `<div class="bar" style="height:${h}px;background:${trend};"></div>`;
+        }).join('');
+    }
+    function pills(c) {
+        let h='';
+        if(c.active) h+=`<span class="mp mp-a">${c.active}</span>`;
+        if(c.churn)  h+=`<span class="mp mp-c">${c.churn}</span>`;
+        if(c.paused) h+=`<span class="mp mp-p">${c.paused}</span>`;
+        if(c.locked) h+=`<span class="mp mp-l">${c.locked}</span>`;
+        return h;
+    }
+    // Highlight: top GC grower and top RC grower — only where Apr > 0
+    const gcList = csms.filter(c=>c.seg==='GC' && c.total[0]>0);
+    const rcList = csms.filter(c=>c.seg==='RC' && c.total[0]>0);
+    const topGcGrow = gcList.reduce((best,c)=> { const g=((c.total[8]-c.total[0])/c.total[0]); const bg=((best.total[8]-best.total[0])/best.total[0]); return g>bg?c:best; });
+    const topRcGrow = rcList.reduce((best,c)=> { const g=((c.total[8]-c.total[0])/c.total[0]); const bg=((best.total[8]-best.total[0])/best.total[0]); return g>bg?c:best; });
+
+    let rows = csms.map(c => {
+        const growth = c.total[0]>0 ? (((c.total[8]-c.total[0])/c.total[0])*100).toFixed(0)+'%' : '—';
+        const isHighlight = (c.csm===topGcGrow.csm && c.seg==='GC') || (c.csm===topRcGrow.csm && c.seg==='RC');
+        return `<tr class="${isHighlight?'highlight-row':''}">
+            <td>${c.csm}</td>
+            <td><span class="seg-tag ${c.seg.toLowerCase()}">${c.seg}</span></td>
+            <td>${c.count}</td>
+            <td class="mini-pills">${pills(c)}</td>
+            <td>${c.ytd_total}M</td>
+            <td>${c.ytd_prod}M</td>
+            <td>${c.ytd_cons}M</td>
+            <td>${growth}</td>
+            <td><div class="trend-spark">${spark(c.total)}</div></td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('csmTable').innerHTML = `
+    <h3><span class="ci" style="background:#0f172a"></span> All CSMs — Revenue, Health & Growth (★ = top grower in segment)</h3>
+    <table>
+        <thead><tr>
+            <th style="text-align:left">CSM Name</th>
+            <th style="text-align:left">Segment</th>
+            <th>Accounts</th>
+            <th>Status</th>
+            <th>Total (₹M)</th>
+            <th>Prod+PS (₹M)</th>
+            <th>Cons (₹M)</th>
+            <th>Apr→Dec Growth</th>
+            <th>Trend</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// INSIGHTS
+// ═══════════════════════════════════════════════════════════
+function renderInsights() {
+    document.getElementById('insightsBox').innerHTML = `
+    <h2>Key Insights</h2>
+    <div class="insights-grid">
+        <div class="insight-item">
+            <div class="it-label">GC is the growth driver</div>
+            <div class="it-text">GC grew <strong>+73.8%</strong> (₹26.5M → ₹46.0M) vs RC's <strong>+20.2%</strong> (₹18.7M → ₹22.4M). GC added ₹19.5M in monthly run-rate; RC added only ₹3.8M.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">Princy Choudhary — star performer</div>
+            <div class="it-text">Highest GC growth: <strong>+209%</strong> (₹4.4M → ₹13.7M). Only 12 accounts but drives the most revenue acceleration in the entire GC team.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">RC is flat — Aman Singh carries it</div>
+            <div class="it-text">RC Dec revenue actually <strong>dipped</strong> to ₹22.4M from Nov's ₹23.5M. Aman Singh alone contributes <strong>55%</strong> of all RC revenue (₹107.9M YTD). Without him, RC is very thin.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">Consumables: GC dominates</div>
+            <div class="it-text">GC consumables grew <strong>₹3.6M → ₹8.9M</strong> (+149%). RC consumables are <strong>shrinking</strong> (₹1.7M → ₹1.2M). Sidharth Sanjeev alone has ₹11.6M YTD consumables.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">Churn is equal, but RC's is worse</div>
+            <div class="it-text">Both segments churned <strong>13 accounts</strong>. But RC has 151 accounts vs GC's 107 — RC's churn rate is <strong>8.6%</strong> vs GC's <strong>12.1%</strong>. Vineet Jain (RC) lost 3 of 8 accounts — needs attention.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">Mark Brian — sharp drop in Nov-Dec</div>
+            <div class="it-text">Revenue collapsed from <strong>₹3.2M → ₹1.6M</strong> in Nov. Likely a single large account churn. Needs investigation — was a stable performer before.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">Paused & Locked accounts</div>
+            <div class="it-text">RC has <strong>6 paused</strong> vs GC's 3. Total locked: only 3 (2 GC, 1 RC). These are small — but paused accounts are revenue at risk if not reactivated.</div>
+        </div>
+        <div class="insight-item">
+            <div class="it-label">Zero-churn GC CSMs</div>
+            <div class="it-text"><strong>Rohan Ratna, Ankita Shinde, Saurabh Yadav</strong> — all GC, zero churns. Ankita is especially clean: 13 accounts, all active, growing steadily.</div>
+        </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+renderSegCards();
+segChart('gcChart', gc, '#2563EB', 'GC');
+segChart('rcChart', rc, '#7c3aed', 'RC');
+compareChart();
+consChart();
+healthChart();
+renderTable();
+renderInsights();
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Segmentation</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f5f7fa; padding:20px; }
+    .container { max-width:1400px; margin:0 auto; background:white; border-radius:12px; box-shadow:0 2px 20px rgba(0,0,0,0.08); overflow:hidden; }
+    .header { background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%); color:white; padding:30px; text-align:center; }
+    .header h1 { font-size:2.2em; margin-bottom:8px; font-weight:600; }
+    .header p { font-size:1em; opacity:0.95; font-weight:300; }
+    .metrics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; padding:24px 30px; background:#fafbfc; }
+    .metric-card { background:white; border-radius:10px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); text-align:center; border-top:4px solid; }
+    .metric-card.enterprise { border-top-color:#DC2626; }
+    .metric-card.midmarket  { border-top-color:#2563EB; }
+    .metric-card.smb        { border-top-color:#16A34A; }
+    .metric-card.micro      { border-top-color:#9333EA; }
+    .metric-label { font-size:0.78em; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; font-weight:600; margin-bottom:6px; }
+    .metric-bucket { font-size:1.1em; font-weight:700; color:#1e293b; margin-bottom:10px; }
+    .metric-range { font-size:0.72em; color:#94a3b8; margin-bottom:10px; }
+    .metric-row { display:flex; justify-content:space-between; font-size:0.78em; color:#64748b; padding:4px 0; }
+    .metric-row span:last-child { font-weight:600; color:#334155; }
+    .charts-section { padding:30px; }
+    .chart-container { background:white; border-radius:10px; padding:24px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    .chart-title { font-size:1.3em; color:#1e293b; margin-bottom:18px; padding-bottom:10px; border-bottom:2px solid #e2e8f0; font-weight:600; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .insights { background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%); color:white; padding:30px; margin:0 30px 30px; border-radius:10px; }
+    .insights h2 { font-size:1.5em; margin-bottom:16px; font-weight:600; }
+    .insights ul { list-style:none; padding-left:0; }
+    .insights li { padding:8px 0; padding-left:24px; position:relative; font-size:0.95em; line-height:1.6; font-weight:300; }
+    .insights li:before { content:"→"; position:absolute; left:0; font-weight:bold; }
+    .insights li strong { font-weight:600; }
+    @media (max-width:768px) { .two-col { grid-template-columns:1fr; } .metrics-grid { grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Customer Segmentation Analysis</h1>
+        <p>April – December 2025 | 231 Customers across 4 Segments</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card enterprise">
+            <div class="metric-label">Segment</div>
+            <div class="metric-bucket">Enterprise</div>
+            <div class="metric-range">₹10M+</div>
+            <div class="metric-row"><span>Customers</span><span>4</span></div>
+            <div class="metric-row"><span>Revenue</span><span>₹73.8M</span></div>
+            <div class="metric-row"><span>ARPU</span><span>₹18.46M</span></div>
+            <div class="metric-row"><span>Focus / RC</span><span>4 / 0</span></div>
+        </div>
+        <div class="metric-card midmarket">
+            <div class="metric-label">Segment</div>
+            <div class="metric-bucket">Mid-Market</div>
+            <div class="metric-range">₹3M – 10M</div>
+            <div class="metric-row"><span>Customers</span><span>49</span></div>
+            <div class="metric-row"><span>Revenue</span><span>₹231.8M</span></div>
+            <div class="metric-row"><span>ARPU</span><span>₹4.73M</span></div>
+            <div class="metric-row"><span>Focus / RC</span><span>30 / 19</span></div>
+        </div>
+        <div class="metric-card smb">
+            <div class="metric-label">Segment</div>
+            <div class="metric-bucket">SMB</div>
+            <div class="metric-range">₹1M – 3M</div>
+            <div class="metric-row"><span>Customers</span><span>92</span></div>
+            <div class="metric-row"><span>Revenue</span><span>₹153.1M</span></div>
+            <div class="metric-row"><span>ARPU</span><span>₹1.66M</span></div>
+            <div class="metric-row"><span>Focus / RC</span><span>36 / 56</span></div>
+        </div>
+        <div class="metric-card micro">
+            <div class="metric-label">Segment</div>
+            <div class="metric-bucket">Micro</div>
+            <div class="metric-range">Below ₹1M</div>
+            <div class="metric-row"><span>Customers</span><span>86</span></div>
+            <div class="metric-row"><span>Revenue</span><span>₹36.5M</span></div>
+            <div class="metric-row"><span>ARPU</span><span>₹0.42M</span></div>
+            <div class="metric-row"><span>Focus / RC</span><span>25 / 61</span></div>
+        </div>
+    </div>
+
+    <div class="charts-section">
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Customer Count by Segment</div>
+                <canvas id="countChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Revenue by Segment (₹M)</div>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Revenue vs Customer Count — with ARPU</div>
+            <canvas id="arputChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <div class="insights">
+        <h2>📊 Key Insights</h2>
+        <ul>
+            <li><strong>Enterprise drives 15% revenue from just 4 customers:</strong> All 4 are MEA Focus. ₹73.8M from 1.7% of the portfolio — highest concentration risk and highest value.</li>
+            <li><strong>Mid-Market is the revenue engine:</strong> 49 customers generating ₹231.8M (47% of total). This is where the bulk of the business sits — protecting this segment is critical.</li>
+            <li><strong>SMB is the largest group by count:</strong> 92 customers but only ₹153.1M (31%). RC MEA dominates here (56 vs 36) — RC has more accounts but at lower value each.</li>
+            <li><strong>Micro is the long tail:</strong> 86 customers contributing only ₹36.5M (7.4%). 71% of these are RC MEA — potential growth opportunity if nurtured upward.</li>
+            <li><strong>MEA Focus skews toward top tiers:</strong> Focus owns 100% of Enterprise and 61% of Mid-Market revenue. RC's strength is in volume at SMB and Micro levels.</li>
+            <li><strong>ARPU drops sharply across tiers:</strong> Enterprise ₹18.46M → Mid-Market ₹4.73M → SMB ₹1.66M → Micro ₹0.42M. Each step down is a 3–4x drop.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+const buckets = ['Enterprise', 'Mid-Market', 'SMB', 'Micro'];
+const focusCount = [4, 30, 36, 25];
+const rcCount    = [0, 19, 56, 61];
+const focusRev   = [73.84, 152.11, 65.35, 10.37];
+const rcRev      = [0.0, 79.64, 87.74, 26.15];
+const arpu       = [18.46, 4.73, 1.66, 0.42];
+const bucketColors = ['#DC2626', '#2563EB', '#16A34A', '#9333EA'];
+
+// ── Chart 1: Customer Count ──
+new Chart(document.getElementById('countChart'), {
+    type: 'bar',
+    data: {
+        labels: buckets,
+        datasets: [
+            { label: 'MEA Focus', data: focusCount, backgroundColor: '#3b82f6cc', borderColor: '#2563EB', borderWidth: 1.5 },
+            { label: 'RC MEA',    data: rcCount,    backgroundColor: '#8b5cf6cc', borderColor: '#7c3aed', borderWidth: 1.5 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top', labels: { font: { size: 12, weight: '600' }, padding: 16 } },
+            tooltip: {
+                backgroundColor: 'rgba(30,41,59,0.95)', padding: 12, cornerRadius: 8,
+                callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + ' customers' }
+            }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+            y: { beginAtZero: true, title: { display: true, text: 'Customers', font: { size: 11, weight: '600' } }, ticks: { stepSize: 10 } }
+        }
+    }
+});
+
+// ── Chart 2: Revenue ──
+new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: {
+        labels: buckets,
+        datasets: [
+            { label: 'MEA Focus', data: focusRev, backgroundColor: '#3b82f6cc', borderColor: '#2563EB', borderWidth: 1.5 },
+            { label: 'RC MEA',    data: rcRev,    backgroundColor: '#8b5cf6cc', borderColor: '#7c3aed', borderWidth: 1.5 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top', labels: { font: { size: 12, weight: '600' }, padding: 16 } },
+            tooltip: {
+                backgroundColor: 'rgba(30,41,59,0.95)', padding: 12, cornerRadius: 8,
+                callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' }
+            }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+            y: { beginAtZero: true, title: { display: true, text: 'Revenue (₹M)', font: { size: 11, weight: '600' } }, ticks: { callback: v => '₹' + v + 'M' } }
+        }
+    }
+});
+
+// ── Chart 3: Combined count + revenue bars with ARPU line ──
+new Chart(document.getElementById('arputChart'), {
+    type: 'bar',
+    data: {
+        labels: buckets,
+        datasets: [
+            {
+                type: 'bar',
+                label: 'Total Revenue',
+                data: focusRev.map((f, i) => f + rcRev[i]),
+                backgroundColor: bucketColors.map(c => c + 'bb'),
+                borderColor: bucketColors,
+                borderWidth: 2,
+                yAxisID: 'y',
+                order: 1
+            },
+            {
+                type: 'line',
+                label: 'ARPU',
+                data: arpu,
+                borderColor: '#f59e0b',
+                backgroundColor: '#f59e0b',
+                borderWidth: 3,
+                pointRadius: 6,
+                pointBackgroundColor: '#f59e0b',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2.5,
+                yAxisID: 'y1',
+                tension: 0.3,
+                order: 0
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { position: 'top', labels: { font: { size: 12, weight: '600' }, padding: 16, usePointStyle: true } },
+            tooltip: {
+                backgroundColor: 'rgba(30,41,59,0.95)', padding: 12, cornerRadius: 8,
+                callbacks: {
+                    label: function(ctx) {
+                        if (ctx.datasetIndex === 0) return 'Revenue: ₹' + ctx.parsed.y.toFixed(1) + 'M';
+                        if (ctx.datasetIndex === 1) return 'ARPU: ₹' + ctx.parsed.y.toFixed(2) + 'M';
+                        return null;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+            y: {
+                position: 'left',
+                beginAtZero: true,
+                title: { display: true, text: 'Revenue (₹M)', font: { size: 11, weight: '600' }, color: '#1e293b' },
+                ticks: { callback: v => '₹' + v + 'M', color: '#64748b' }
+            },
+            y1: {
+                position: 'right',
+                beginAtZero: true,
+                title: { display: true, text: 'ARPU (₹M)', font: { size: 11, weight: '600' }, color: '#f59e0b' },
+                ticks: { callback: v => '₹' + v + 'M', color: '#f59e0b' },
+                grid: { display: false }
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>

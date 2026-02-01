@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QoQ NRR Analysis Dashboard - April > 0 Cohort</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; }
+        .header p { font-size: 1em; opacity: 0.95; }
+        
+        .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+        .section-title { font-size: 1.5em; color: #1e293b; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid; font-weight: 600; }
+        .section-title.total { border-bottom-color: #10b981; }
+        .section-title.product { border-bottom-color: #3b82f6; }
+        .section-title.consumables { border-bottom-color: #f59e0b; }
+        .section-title.gc { border-bottom-color: #8b5cf6; }
+        .section-title.rc { border-bottom-color: #ec4899; }
+        
+        .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
+        .metric-box { background: #fafbfc; padding: 20px; border-radius: 8px; border-left: 4px solid; }
+        .metric-box.q2 { border-left-color: #3b82f6; }
+        .metric-box.q3 { border-left-color: #10b981; }
+        .metric-box.q4 { border-left-color: #8b5cf6; }
+        .metric-label { font-size: 0.85em; color: #64748b; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .metric-value { font-size: 2em; font-weight: 700; color: #1e293b; }
+        .metric-sub { font-size: 0.85em; color: #64748b; margin-top: 8px; }
+        
+        .growth-indicators { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
+        .growth-box { padding: 15px 30px; border-radius: 8px; font-weight: 600; }
+        .growth-box.positive { background: #d1fae5; color: #065f46; }
+        .growth-box.negative { background: #fee2e2; color: #991b1b; }
+        
+        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; margin: 30px 0; border-radius: 12px; }
+        .insights h2 { font-size: 1.6em; margin-bottom: 20px; font-weight: 600; }
+        .insights ul { list-style: none; padding-left: 0; }
+        .insights li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 1em; line-height: 1.7; font-weight: 300; }
+        .insights li:before { content: "→"; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        .insights li strong { font-weight: 600; }
+        
+        @media (max-width: 768px) { .metrics-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QoQ NRR Analysis Dashboard</h1>
+            <p>Q2-Q4 2025 | April > 0 Cohort</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title total">📊 Total NRR (GC + RC Combined - April>0 Cohort)</div>
+            <div class="metrics-row">
+                <div class="metric-box q2">
+                    <div class="metric-label">Q2 Total</div>
+                    <div class="metric-value">₹140.5M</div>
+                    <div class="metric-sub">GC: ₹82.4M | RC: ₹58.0M</div>
+                </div>
+                <div class="metric-box q3">
+                    <div class="metric-label">Q3 Total</div>
+                    <div class="metric-value">₹139.3M</div>
+                    <div class="metric-sub">GC: ₹79.8M | RC: ₹59.5M</div>
+                </div>
+                <div class="metric-box q4">
+                    <div class="metric-label">Q4 Total</div>
+                    <div class="metric-value">₹142.0M</div>
+                    <div class="metric-sub">GC: ₹84.0M | RC: ₹57.9M</div>
+                </div>
+            </div>
+            <canvas id="totalNrrChart" height="80"></canvas>
+            <div class="growth-indicators">
+                <div class="growth-box negative">Q3 vs Q2: -0.7%</div>
+                <div class="growth-box positive">Q4 vs Q3: +1.8%</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title product">📦 Product + PS NRR (April>0 Cohort)</div>
+            <div class="metrics-row">
+                <div class="metric-box q2">
+                    <div class="metric-label">Q2 Total</div>
+                    <div class="metric-value">₹121.5M</div>
+                    <div class="metric-sub">86.5% of Total NRR</div>
+                </div>
+                <div class="metric-box q3">
+                    <div class="metric-label">Q3 Total</div>
+                    <div class="metric-value">₹125.1M</div>
+                    <div class="metric-sub">89.7% of Total NRR</div>
+                </div>
+                <div class="metric-box q4">
+                    <div class="metric-label">Q4 Total</div>
+                    <div class="metric-value">₹126.3M</div>
+                    <div class="metric-sub">88.9% of Total NRR</div>
+                </div>
+            </div>
+            <canvas id="productPsChart" height="80"></canvas>
+            <div class="growth-indicators">
+                <div class="growth-box positive">Q3 vs Q2: +3.0%</div>
+                <div class="growth-box positive">Q4 vs Q3: +1.0%</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title consumables">🔧 Consumables NRR (April>0 Cohort)</div>
+            <div class="metrics-row">
+                <div class="metric-box q2">
+                    <div class="metric-label">Q2 Total</div>
+                    <div class="metric-value">₹19.0M</div>
+                    <div class="metric-sub">13.5% of Total NRR</div>
+                </div>
+                <div class="metric-box q3">
+                    <div class="metric-label">Q3 Total</div>
+                    <div class="metric-value">₹14.2M</div>
+                    <div class="metric-sub">10.2% of Total NRR</div>
+                </div>
+                <div class="metric-box q4">
+                    <div class="metric-label">Q4 Total</div>
+                    <div class="metric-value">₹15.6M</div>
+                    <div class="metric-sub">11.0% of Total NRR</div>
+                </div>
+            </div>
+            <canvas id="consumablesChart" height="80"></canvas>
+            <div class="growth-indicators">
+                <div class="growth-box negative">Q3 vs Q2: -25.3%</div>
+                <div class="growth-box positive">Q4 vs Q3: +9.9%</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title gc">👤 All 16 GC Persons - April>0 Cohort (Sorted by Total Revenue)</div>
+            <canvas id="gcPersonChart" height="180"></canvas>
+        </div>
+        
+        <div class="section">
+            <div class="section-title rc">👤 All 8 RC Persons - April>0 Cohort (Sorted by Total Revenue)</div>
+            <canvas id="rcPersonChart" height="130"></canvas>
+        </div>
+
+        <div class="section">
+            <div class="section-title total">📈 GC vs RC — Quarterly Retention Trend</div>
+            <canvas id="retentionChart" height="80"></canvas>
+            <div class="growth-indicators">
+                <div class="growth-box negative">GC Q3 vs Q2: -3.2%</div>
+                <div class="growth-box positive">GC Q4 vs Q3: +5.3%</div>
+                <div class="growth-box positive">RC Q3 vs Q2: +2.6%</div>
+                <div class="growth-box negative">RC Q4 vs Q3: -2.7%</div>
+            </div>
+        </div>
+        
+        <div class="insights">
+            <h2>📊 Key NRR Insights (April>0 Cohort)</h2>
+            <ul>
+                <li><strong>Stable Cohort Retention:</strong> The April>0 cohort maintained near-flat performance (₹140.5M to ₹142.0M), showing +1.1% overall growth from Q2 to Q4, indicating strong customer stickiness with minimal churn from the baseline cohort.</li>
+                
+                <li><strong>Q4 Recovery After Q3 Dip:</strong> After declining 0.7% in Q3, the cohort recovered with 1.8% growth in Q4, demonstrating resilience and successful re-engagement of existing accounts.</li>
+                
+                <li><strong>Product+PS Drives Stability:</strong> Product and Professional Services NRR grew steadily from ₹121.5M to ₹126.3M (+4.0% overall), providing a stable revenue foundation and maintaining 87-90% of total NRR throughout the quarters.</li>
+                
+                <li><strong>Consumables Volatility:</strong> Consumables NRR declined sharply in Q3 (-25.3%) before partially recovering in Q4 (+9.9%), suggesting seasonal purchasing patterns or one-time bulk purchases that need attention for predictability.</li>
+                
+                <li><strong>GC Volatility vs RC Stability:</strong> GC accounts showed more volatility (-3.15% Q3, +5.32% Q4) while RC remained steadier (+2.74% Q3, -2.91% Q4), suggesting different purchasing patterns between Focus and RC segments.</li>
+                
+                <li><strong>Top Contributors Drive Retention:</strong> Princy Choudhary (₹46.0M total), Sidharth Sanjeev (₹39.2M), and Aditi Jannu (₹35.7M) are the largest GC contributors to cohort retention, while Aman Singh leads RC with ₹101.1M, with their combined performance critical to overall NRR health.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const colors = { q2: '#3b82f6', q3: '#10b981', q4: '#8b5cf6', focus: '#3b82f6', rc: '#f59e0b' };
+        
+        // Total NRR Chart
+        new Chart(document.getElementById('totalNrrChart'), {
+            type: 'line',
+            data: {
+                labels: ['Q2 2025', 'Q3 2025', 'Q4 2025'],
+                datasets: [
+                    { label: 'Total', data: [140.4, 139.3, 142.0], borderColor: colors.q2, backgroundColor: colors.q2 + '20', borderWidth: 4, fill: true, tension: 0.4, pointRadius: 6 },
+                    { label: 'GC (MEA Focus)', data: [82.4, 79.8, 84.0], borderColor: colors.focus, backgroundColor: colors.focus + '15', borderWidth: 3, fill: false, tension: 0.4, pointRadius: 5, borderDash: [5, 5] },
+                    { label: 'RC MEA', data: [58.0, 59.5, 57.9], borderColor: colors.rc, backgroundColor: colors.rc + '15', borderWidth: 3, fill: false, tension: 0.4, pointRadius: 5, borderDash: [5, 5] }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+            }
+        });
+        
+        // Product+PS NRR Chart
+        new Chart(document.getElementById('productPsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Q2 2025', 'Q3 2025', 'Q4 2025'],
+                datasets: [
+                    { label: 'Total', data: [121.4, 125.1, 126.3], backgroundColor: colors.q2 + 'cc', borderColor: colors.q2, borderWidth: 2, borderRadius: 6 },
+                    { label: 'GC (MEA Focus)', data: [69.9, 69.4, 70.8], backgroundColor: colors.focus + 'cc', borderColor: colors.focus, borderWidth: 2, borderRadius: 6 },
+                    { label: 'RC MEA', data: [51.5, 55.7, 55.5], backgroundColor: colors.rc + 'cc', borderColor: colors.rc, borderWidth: 2, borderRadius: 6 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+            }
+        });
+        
+        // Consumables NRR Chart
+        new Chart(document.getElementById('consumablesChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Q2 2025', 'Q3 2025', 'Q4 2025'],
+                datasets: [
+                    { label: 'Total', data: [19.0, 14.2, 15.6], backgroundColor: colors.rc + 'cc', borderColor: colors.rc, borderWidth: 2, borderRadius: 6 },
+                    { label: 'GC (MEA Focus)', data: [12.5, 10.4, 13.2], backgroundColor: colors.focus + 'cc', borderColor: colors.focus, borderWidth: 2, borderRadius: 6 },
+                    { label: 'RC MEA', data: [6.5, 3.9, 2.5], backgroundColor: colors.q4 + 'cc', borderColor: colors.q4, borderWidth: 2, borderRadius: 6 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+            }
+        });
+        
+        // GC Person Chart
+        new Chart(document.getElementById('gcPersonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Princy Choudhary', 'Sidharth Sanjeev', 'Aditi Jannu', 'Rohan Ratna', 'Ankita Shinde', 'Mark Brian', 'Rishika Sharma', 'Saurabh Yadav', 'Rajas Bhagat', 'Vipin Aniyath', 'Tushar Omprakash', 'Himank Goyal', 'Roaya Trade (No GC)', 'Aarushi Handa', 'Next Bite (No GC)', 'Saharsh Jhawar'],
+                datasets: [
+                    { label: 'Q2', data: [14.49, 13.10, 11.89, 10.19, 8.06, 9.97, 7.25, 4.36, 0.77, 0.77, 0.46, 0.77, 0.30, 0.00, 0.00, 0.00], backgroundColor: colors.q2 + 'cc', borderColor: colors.q2, borderWidth: 2, borderRadius: 6 },
+                    { label: 'Q3', data: [14.50, 13.07, 11.72, 9.72, 7.27, 9.28, 6.81, 4.79, 0.92, 0.82, 0.46, 0.26, 0.15, 0.00, 0.00, 0.00], backgroundColor: colors.q3 + 'cc', borderColor: colors.q3, borderWidth: 2, borderRadius: 6 },
+                    { label: 'Q4', data: [17.01, 12.99, 12.07, 9.91, 12.62, 6.02, 6.74, 4.35, 0.92, 0.91, 0.47, 0.00, 0.00, 0.00, 0.00, 0.00], backgroundColor: colors.q4 + 'cc', borderColor: colors.q4, borderWidth: 2, borderRadius: 6 }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.x.toFixed(2) + 'M' } } },
+                scales: { x: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+            }
+        });
+        
+        // RC Person Chart
+        new Chart(document.getElementById('rcPersonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Aman Singh', 'Dashmesh Singh', 'Vineet Jain', 'Himanshi Verma', 'Philip Mathew', 'Divya Shivakumar', 'Simran Kapoor', 'Padmini Deshpande'],
+                datasets: [
+                    { label: 'Q2', data: [34.17, 7.69, 5.40, 4.48, 2.54, 2.63, 0.83, 0.25], backgroundColor: colors.q2 + 'cc', borderColor: colors.q2, borderWidth: 2, borderRadius: 6 },
+                    { label: 'Q3', data: [34.20, 8.23, 5.03, 4.66, 3.01, 3.26, 0.88, 0.26], backgroundColor: colors.q3 + 'cc', borderColor: colors.q3, borderWidth: 2, borderRadius: 6 },
+                    { label: 'Q4', data: [32.77, 8.21, 4.93, 4.95, 3.66, 2.29, 0.87, 0.27], backgroundColor: colors.q4 + 'cc', borderColor: colors.q4, borderWidth: 2, borderRadius: 6 }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.x.toFixed(2) + 'M' } } },
+                scales: { x: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+            }
+        });
+
+        // GC vs RC Retention Trend (indexed to Q2 = 100)
+        new Chart(document.getElementById('retentionChart'), {
+            type: 'line',
+            data: {
+                labels: ['Q2 2025', 'Q3 2025', 'Q4 2025'],
+                datasets: [
+                    { label: 'GC (MEA Focus)', data: [82.4, 79.8, 84.0], borderColor: colors.focus, backgroundColor: colors.focus + '20', borderWidth: 3, fill: true, tension: 0.4, pointRadius: 6 },
+                    { label: 'RC MEA', data: [58.0, 59.5, 57.9], borderColor: colors.rc, backgroundColor: colors.rc + '20', borderWidth: 3, fill: true, tension: 0.4, pointRadius: 6 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } }
+                },
+                scales: {
+                    y: { beginAtZero: false, ticks: { callback: value => '₹' + value + 'M' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
