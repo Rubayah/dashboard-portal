@@ -2,38 +2,63 @@ import streamlit as st
 from pathlib import Path
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Executive Dashboard Portal", layout="wide")
+# -------------------------
+# Page setup
+# -------------------------
+st.set_page_config(page_title="Revenue Dashboard | Apr–Dec 2025", layout="wide")
 
-st.title("📊 Executive Dashboard Portal")
+# Compact layout styling
+st.markdown(
+    """
+    <style>
+      .block-container {padding-top: 0.6rem; padding-bottom: 0.5rem;}
+      header[data-testid="stHeader"] {height: 0rem;}
+      div[data-testid="stToolbar"] {visibility: hidden; height: 0rem;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Header bar
+st.markdown(
+    """
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:8px;">
+      <div style="font-size:22px; font-weight:700;">Revenue Dashboard</div>
+      <div style="font-size:16px; opacity:0.7;">Apr–Dec 2025</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 BASE_DIR = Path(__file__).parent
 DASH_DIR = BASE_DIR / "dashboards"
 
-# Map filenames → clean titles
-dashboard_map = {
-    "dashboard.html": "🏠 Executive Overview",
-    "MoM_Revenue_Dashboard_FINAL (1).html": "📈 Month-on-Month Revenue",
-    "YTD_Revenue_Chart_Fixed.html": "📊 YTD Revenue",
-    "GC_RC_Growth_Analysis.html": "🚀 Growth Analysis (GC vs RC)",
-    "Pareto_Analysis_April_December (1).html": "🥇 Pareto Revenue Analysis",
-    "Customer_Segmentation_Chart.html": "👥 Customer Segmentation",
-    "nrr.html": "💰 Net Revenue Retention",
-}
+# -------------------------
+# Dashboard order + mapping
+# -------------------------
+tabs_config = [
+    ("📊 YTD Revenue", "YTD_Revenue_Chart_Fixed.html"),
+    ("📈 QoQ Revenue (April Cohort)", "dashboard.html"),
+    ("💰 QoQ NRR (April Cohort)", "nrr.html"),
+    ("🗓️ MoM Revenue", "MoM_Revenue_Dashboard_FINAL (1).html"),
+    ("🏅 Pareto Drivers", "Pareto_Analysis_April_December (1).html"),
+    ("👥 Customer Segments", "Customer_Segmentation_Chart.html"),
+    ("🚀 GC vs RC Growth", "GC_RC_Growth_Analysis.html"),
+]
 
-available_files = sorted((DASH_DIR).glob("*.html"))
+# Safety check
+missing = [f for _, f in tabs_config if not (DASH_DIR / f).exists()]
+if missing:
+    st.error("Missing HTML files in dashboards folder:\n\n- " + "\n- ".join(missing))
+    st.stop()
 
-# Keep only dashboards that exist
-titles = []
-files = []
-for file in available_files:
-    name = file.name
-    if name in dashboard_map:
-        titles.append(dashboard_map[name])
-        files.append(file)
+# -------------------------
+# Tabs
+# -------------------------
+tab_labels = [t[0] for t in tabs_config]
+tabs = st.tabs(tab_labels)
 
-selected = st.sidebar.selectbox("Select Dashboard", titles)
-selected_file = files[titles.index(selected)]
-
-html = selected_file.read_text(encoding="utf-8", errors="ignore")
-
-components.html(html, height=950, scrolling=True)
+for tab, (_, filename) in zip(tabs, tabs_config):
+    with tab:
+        html = (DASH_DIR / filename).read_text(encoding="utf-8", errors="ignore")
+        components.html(html, height=920, scrolling=True)
