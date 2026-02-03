@@ -43,7 +43,7 @@ tabs_config = [
     ("📅 MoM Revenue", "MoM_Dashboard_Fixed_Final (1).html"),
     ("🧭 Pareto Drivers", "Pareto_Analysis_CORRECTED.html"),
     ("👥 Customer Segments", "Customer_Segmentation_ARPA_Chart.html"),
-    ("🔀 GC vs RC Growth", "GC_RC_Growth_Analysis.html"),
+    ("🔀 GC vs RC Growth", "GC_RC_Growth_Analysis_Updated.html"),
 ]
 
 # Safety check
