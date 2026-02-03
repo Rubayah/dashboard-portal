@@ -87,13 +87,13 @@
         
         <!-- PRODUCT+PS SECTION -->
         <div class="section">
-            <div class="section-title product">📦 Product + PS Revenue</div>
+            <div class="section-title product">Product + PS Revenue</div>
             <canvas id="productPsChart" height="120"></canvas>
         </div>
         
         <!-- CONSUMABLES SECTION -->
         <div class="section">
-            <div class="section-title consumables">🔧 Consumables Revenue</div>
+            <div class="section-title consumables">Consumables Revenue</div>
             <canvas id="consumablesChart" height="120"></canvas>
         </div>
         
@@ -161,33 +161,47 @@
         const novJoiners = [0, 0, 0, 0, 0, 0, 0, 3.61, 3.61];
         const decJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 6.53];
         
-        // Product+PS data (from screenshot Excel table)
+        // Product+PS data (from updated table - Screenshot 2026-02-03 1:44:04 PM)
         const productTotal = [39.86, 42.44, 40.54, 42.48, 48.35, 50.01, 54.33, 56.38, 58.84];
-        const productCohort = [39.86, 42.08, 39.41, 40.03, 42.53, 42.49, 42.84, 42.55, 40.95];
+        const productCohort = [39.857, 42.136, 40.473, 41.592, 46.440, 48.881, 51.588, 56.230, 58.202];
+        
+        // Focus vs RC breakdown for Product+PS
+        const productFocus = [22.92, 24.52, 22.90, 23.22, 27.27, 28.95, 32.31, 34.27, 37.59];
+        const productRC = [16.94, 17.92, 17.63, 19.25, 21.08, 21.06, 22.01, 22.11, 21.26];
+        
+        // New Accounts for Product+PS (cumulative persisting amounts)
+        const productNewAccounts = [0, 0.30214, 0.06575, 0.88708, 1.91197, 1.13108, 2.73762, 0.15395, 0.64309];
         
         // Correct incremental joiners for Product+PS - each month's new accounts persist
-        const productMayJoiners = [0, 0.36, 0.36, 0.36, 0.36, 0.36, 0.36, 0.36, 0.36];
-        const productJunJoiners = [0, 0, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77];
-        const productJulJoiners = [0, 0, 0, 1.32, 1.32, 1.32, 1.32, 1.32, 1.32];
-        const productAugJoiners = [0, 0, 0, 0, 3.37, 3.37, 3.37, 3.37, 3.37];
-        const productSepJoiners = [0, 0, 0, 0, 0, 1.70, 1.70, 1.70, 1.70];
-        const productOctJoiners = [0, 0, 0, 0, 0, 0, 3.97, 3.97, 3.97];
-        const productNovJoiners = [0, 0, 0, 0, 0, 0, 0, 2.34, 2.34];
-        const productDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 4.06];
+        const productMayJoiners = [0, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214];
+        const productJunJoiners = [0, 0, 0.06575, 0.06575, 0.06575, 0.06575, 0.06575, 0.06575, 0.06575];
+        const productJulJoiners = [0, 0, 0, 0.88708, 0.88708, 0.88708, 0.88708, 0.88708, 0.88708];
+        const productAugJoiners = [0, 0, 0, 0, 1.91197, 1.91197, 1.91197, 1.91197, 1.91197];
+        const productSepJoiners = [0, 0, 0, 0, 0, 1.13108, 1.13108, 1.13108, 1.13108];
+        const productOctJoiners = [0, 0, 0, 0, 0, 0, 2.73762, 2.73762, 2.73762];
+        const productNovJoiners = [0, 0, 0, 0, 0, 0, 0, 0.15395, 0.15395];
+        const productDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.64309];
         
-        // Consumables data (from screenshot Excel table)
+        // Consumables data (from updated table - Screenshot 2026-02-03 1:05:54 PM)
         const consumablesTotal = [5.26, 6.52, 7.58, 5.60, 4.31, 7.80, 6.52, 8.37, 10.01];
-        const consumablesCohort = [5.26, 6.31, 7.43, 5.27, 3.75, 5.22, 5.10, 5.68, 4.85];
+        const consumablesCohort = [5.26, 6.36, 7.58, 5.56, 4.29, 7.80, 6.47, 8.25, 9.81];
+        
+        // Focus vs RC breakdown for Consumables
+        const consumablesFocus = [3.56, 4.39, 4.91, 3.58, 3.27, 6.66, 5.54, 6.97, 8.86];
+        const consumablesRC = [1.71, 2.13, 2.68, 2.02, 1.04, 1.14, 0.98, 1.40, 1.16];
+        
+        // New Accounts for Consumables (cumulative persisting amounts)
+        const consumablesNewAccounts = [0, 0.15458, 0.00470, 0.04053, 0.02247, 0.00000, 0.04794, 0.11669, 0.20065];
         
         // Correct incremental joiners for Consumables - each month's new accounts persist
-        const consumablesMayJoiners = [0, 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.21];
-        const consumablesJunJoiners = [0, 0, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06];
-        const consumablesJulJoiners = [0, 0, 0, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18];
-        const consumablesAugJoiners = [0, 0, 0, 0, 0.23, 0.23, 0.23, 0.23, 0.23];
-        const consumablesSepJoiners = [0, 0, 0, 0, 0, 2.02, 2.02, 2.02, 2.02];
-        const consumablesOctJoiners = [0, 0, 0, 0, 0, 0, -1.16, -1.16, -1.16];
-        const consumablesNovJoiners = [0, 0, 0, 0, 0, 0, 0, 1.27, 1.27];
-        const consumablesDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 2.47];
+        const consumablesMayJoiners = [0, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458];
+        const consumablesJunJoiners = [0, 0, 0.00470, 0.00470, 0.00470, 0.00470, 0.00470, 0.00470, 0.00470];
+        const consumablesJulJoiners = [0, 0, 0, 0.04053, 0.04053, 0.04053, 0.04053, 0.04053, 0.04053];
+        const consumablesAugJoiners = [0, 0, 0, 0, 0.02247, 0.02247, 0.02247, 0.02247, 0.02247];
+        const consumablesSepJoiners = [0, 0, 0, 0, 0, 0.00000, 0.00000, 0.00000, 0.00000];
+        const consumablesOctJoiners = [0, 0, 0, 0, 0, 0, 0.04794, 0.04794, 0.04794];
+        const consumablesNovJoiners = [0, 0, 0, 0, 0, 0, 0, 0.11669, 0.11669];
+        const consumablesDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.20065];
         
         // GC Person data
         const gcPersons = ['Princy Choudhary', 'Sidharth Sanjeev', 'Aditi Jannu', 'Rohan Ratna', 'Ankita Shinde', 'Mark Brian', 'Rishika Sharma', 'Saurabh Yadav', 'Saharsh Jhawar', 'Rajas Bhagat', 'Vipin Aniyath', 'Aarushi Handa'];
@@ -388,8 +402,8 @@
                                     items[0].label + ' 2025',
                                     '─────────────────────',
                                     'Total Revenue: ' + totalRevenue[idx].toFixed(1) + 'M',
-                                    '├─ MEA Focus: ' + meaTotal[idx].toFixed(2) + 'M',
-                                    '└─ RC MEA: ' + rcTotal[idx].toFixed(2) + 'M'
+                                    '  MEA Focus: ' + meaTotal[idx].toFixed(2) + 'M',
+                                    '  RC MEA: ' + rcTotal[idx].toFixed(2) + 'M'
                                 ];
                             },
                             label: function(c) {
@@ -563,15 +577,33 @@
                         callbacks: {
                             title: function(items) {
                                 const idx = items[0].dataIndex;
-                                return [
+                                const lines = [
                                     items[0].label + ' | Product+PS',
                                     '─────────────────────',
-                                    'Total: ' + productTotal[idx].toFixed(1) + 'M'
+                                    'Total: ' + productTotal[idx].toFixed(2) + 'M',
+                                    '  MEA Focus: ' + productFocus[idx].toFixed(2) + 'M',
+                                    '  RC MEA: ' + productRC[idx].toFixed(2) + 'M',
+                                    '',
+                                    'April Baseline: ' + productCohort[idx].toFixed(2) + 'M'
                                 ];
+                                if (idx > 0) {
+                                    const newAcc = productNewAccounts[idx];
+                                    if (newAcc < 1) {
+                                        lines.push('New Accounts: ' + (newAcc * 1000).toFixed(0) + 'K');
+                                    } else {
+                                        lines.push('New Accounts: ' + newAcc.toFixed(2) + 'M');
+                                    }
+                                }
+                                return lines;
                             },
                             label: function(c) {
                                 if (c.parsed.y === 0) return null;
-                                return c.dataset.label + ': ' + c.parsed.y.toFixed(2) + 'M';
+                                const val = c.parsed.y;
+                                // Format as K if less than 1M
+                                if (val < 1) {
+                                    return c.dataset.label + ': ' + (val * 1000).toFixed(0) + 'K';
+                                }
+                                return c.dataset.label + ': ' + val.toFixed(2) + 'M';
                             }
                         }
                     }
@@ -729,15 +761,37 @@
                         callbacks: {
                             title: function(items) {
                                 const idx = items[0].dataIndex;
-                                return [
+                                const lines = [
                                     items[0].label + ' | Consumables',
                                     '─────────────────────',
-                                    'Total: ' + consumablesTotal[idx].toFixed(1) + 'M'
+                                    'Total: ' + consumablesTotal[idx].toFixed(2) + 'M',
+                                    '  MEA Focus: ' + consumablesFocus[idx].toFixed(2) + 'M',
+                                    '  RC MEA: ' + consumablesRC[idx].toFixed(2) + 'M',
+                                    '',
+                                    'April Baseline: ' + consumablesCohort[idx].toFixed(2) + 'M'
                                 ];
+                                if (idx > 0) {
+                                    const newAcc = consumablesNewAccounts[idx];
+                                    if (newAcc < 0.001 && newAcc > 0) {
+                                        lines.push('New Accounts: ' + (newAcc * 1000).toFixed(0) + 'K');
+                                    } else if (newAcc < 1) {
+                                        lines.push('New Accounts: ' + (newAcc * 1000).toFixed(0) + 'K');
+                                    } else if (newAcc === 0) {
+                                        lines.push('New Accounts: 0.00');
+                                    } else {
+                                        lines.push('New Accounts: ' + newAcc.toFixed(2) + 'M');
+                                    }
+                                }
+                                return lines;
                             },
                             label: function(c) {
                                 if (c.parsed.y === 0) return null;
-                                return c.dataset.label + ': ' + c.parsed.y.toFixed(2) + 'M';
+                                const val = c.parsed.y;
+                                // Format as K if less than 1M
+                                if (val < 1) {
+                                    return c.dataset.label + ': ' + (val * 1000).toFixed(0) + 'K';
+                                }
+                                return c.dataset.label + ': ' + val.toFixed(2) + 'M';
                             }
                         }
                     }
