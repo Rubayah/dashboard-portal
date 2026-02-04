@@ -61,19 +61,19 @@
             
             <div class="metrics-row">
                 <div class="metric-box april">
-                    <div class="metric-label">April Baseline</div>
+                    <div class="metric-label">April Baseline Accounts</div>
                     <div class="metric-value">172</div>
-                    <div class="metric-sub">Cohort accounts<br>69 GC + 103 RC<br>₹45.12M revenue</div>
+                    <div class="metric-sub">Total accounts<br>68 Focus + 104 RC<br>₹45.12M revenue</div>
                 </div>
                 <div class="metric-box december">
-                    <div class="metric-label">December Total</div>
-                    <div class="metric-value">232</div>
-                    <div class="metric-sub">Total accounts<br>97 GC + 135 RC<br>₹495.2M total revenue<br>₹68.86M in Dec</div>
+                    <div class="metric-label">December Total Accounts</div>
+                    <div class="metric-value">211</div>
+                    <div class="metric-sub">Active accounts<br>85 Focus + 126 RC<br>₹495.2M total revenue<br>₹68.86M in Dec</div>
                 </div>
                 <div class="metric-box new">
                     <div class="metric-label">Gross New Accounts</div>
-                    <div class="metric-value">+60</div>
-                    <div class="metric-sub">Added May-Dec<br>28 GC + 32 RC<br>₹73.34M total revenue</div>
+                    <div class="metric-value">+54</div>
+                    <div class="metric-sub">Added May-Dec<br>19 Focus + 35 RC<br>₹7.21M total revenue</div>
                 </div>
                 <div class="metric-box growth">
                     <div class="metric-label">Total Growth</div>
@@ -113,9 +113,9 @@
         <div class="insights">
             <h2>📊 Key MoM Insights</h2>
             <ul>
-                <li><strong>Strong Incremental Growth:</strong> Revenue grew 52.6% from ₹45.12M (April) to ₹68.86M (December), driven by stable April cohort (₹45.80M in Dec) and 60 gross new accounts contributing ₹73.34M cumulatively.</li>
+                <li><strong>Strong Incremental Growth:</strong> Revenue grew 52.6% from ₹45.12M (April) to ₹68.86M (December), driven by stable April cohort (₹45.80M in Dec) and 54 gross new accounts (19 Focus + 35 RC) contributing ₹7.21M cumulatively.</li>
                 
-                <li><strong>April Cohort Retention:</strong> Original 172 accounts (69 GC + 103 RC) maintained ₹45.80M in December vs ₹45.12M in April (+1.5%), showing excellent baseline retention with minimal net churn.</li>
+                <li><strong>April Cohort Retention:</strong> Original 172 accounts (68 Focus + 104 RC) maintained ₹45.80M in December vs ₹45.12M in April (+1.5%), showing excellent baseline retention with minimal net churn.</li>
                 
                 <li><strong>Top GC Performers:</strong> Princy Choudhary leads with ₹62.09M YTD, growing from ₹4.43M (Apr) to ₹13.67M (Dec) — a +209% jump. Sidharth Sanjeev follows at ₹51.80M YTD (+115% Apr→Dec).</li>
                 
@@ -151,15 +151,41 @@
         const meaTotal = [26.47, 28.92, 27.81, 26.80, 30.53, 35.61, 37.85, 41.24, 46.44];
         const rcTotal = [18.65, 20.04, 20.31, 21.27, 22.13, 22.20, 23.00, 23.51, 22.42];
         
-        // Incremental new joiners persisting through months
-        const mayJoiners = [0, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57];
-        const junJoiners = [0, 0, 0.71, 0.71, 0.71, 0.71, 0.71, 0.71, 0.71];
-        const julJoiners = [0, 0, 0, 1.48, 1.48, 1.48, 1.48, 1.48, 1.48];
-        const augJoiners = [0, 0, 0, 0, 3.63, 3.63, 3.63, 3.63, 3.63];
-        const sepJoiners = [0, 0, 0, 0, 0, 3.70, 3.70, 3.70, 3.70];
-        const octJoiners = [0, 0, 0, 0, 0, 0, 2.83, 2.83, 2.83];
-        const novJoiners = [0, 0, 0, 0, 0, 0, 0, 3.61, 3.61];
-        const decJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 6.53];
+        // Incremental new joiners persisting through months (converted from New Accounts Total)
+        const mayJoiners = [0, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55];      // 545833.60
+        const junJoiners = [0, 0, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07];         // 74032.74
+        const julJoiners = [0, 0, 0, 1.33, 1.33, 1.33, 1.33, 1.33, 1.33];            // 1333736.26
+        const augJoiners = [0, 0, 0, 0, 0.73, 0.73, 0.73, 0.73, 0.73];               // 733618.82
+        const sepJoiners = [0, 0, 0, 0, 0, 2.53, 2.53, 2.53, 2.53];                  // 2528181.85
+        const octJoiners = [0, 0, 0, 0, 0, 0, 0.52, 0.52, 0.52];                     // 520762.01
+        const novJoiners = [0, 0, 0, 0, 0, 0, 0, 0.64, 0.64];                        // 640888.02
+        const decJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.83];                           // 832923.64
+        
+        // Joiner counts for tooltip (Focus + RC in brackets)
+        // Format: [Focus joiners, RC joiners, Total joiners]
+        const joinerCounts = {
+            may: [1, 5, 6],      // From Joiners_MEA, Joiners_RC, Joiners_Total
+            jun: [0, 2, 2],
+            jul: [5, 3, 8],
+            aug: [2, 4, 6],
+            sep: [5, 5, 10],
+            oct: [0, 5, 5],
+            nov: [4, 0, 4],
+            dec: [2, 11, 13]
+        };
+        
+        // Monthly new joiner revenue (New Accounts Total from screenshot) in ₹
+        const newAccountsRevenue = [
+            0,           // April (baseline)
+            545833.60,   // May
+            74032.74,    // June
+            1333736.26,  // July
+            733618.82,   // August
+            2528181.85,  // September
+            520762.01,   // October
+            640888.02,   // November
+            832923.64    // December
+        ];
         
         // Product+PS data (from updated table - Screenshot 2026-02-03 1:44:04 PM)
         const productTotal = [39.86, 42.44, 40.54, 42.48, 48.35, 50.01, 54.33, 56.38, 58.84];
@@ -398,13 +424,29 @@
                         callbacks: {
                             title: function(items) {
                                 const idx = items[0].dataIndex;
-                                return [
+                                const lines = [
                                     items[0].label + ' 2025',
                                     '─────────────────────',
                                     'Total Revenue: ' + totalRevenue[idx].toFixed(1) + 'M',
                                     '  MEA Focus: ' + meaTotal[idx].toFixed(2) + 'M',
                                     '  RC MEA: ' + rcTotal[idx].toFixed(2) + 'M'
                                 ];
+                                
+                                // Add new accounts revenue for May onwards
+                                if (idx > 0) {
+                                    const newAccRev = newAccountsRevenue[idx];
+                                    
+                                    // Format revenue: always use K
+                                    const formatRevenue = (val) => {
+                                        if (val === 0) return '0';
+                                        return '₹' + (val / 1000).toFixed(1) + 'K';
+                                    };
+                                    
+                                    lines.push('');
+                                    lines.push('New Accounts: ' + formatRevenue(newAccRev));
+                                }
+                                
+                                return lines;
                             },
                             label: function(c) {
                                 if (c.parsed.y === 0) return null;
