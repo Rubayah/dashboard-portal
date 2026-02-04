@@ -40,7 +40,7 @@ tabs_config = [
     ("📊 YTD Revenue", "YTD_Revenue_Chart_Fixed.html"),
     ("📈 QoQ Revenue ", "dashboard.html"),
     ("🔁 QoQ NRR (April Cohort)", "nrr.html"),
-    ("📅 MoM Revenue", "MoM_Dashboard_Final.html"),
+    ("📅 MoM Revenue", "MoM_Dashboard_Updated (5).html"),
     ("🧭 Pareto Drivers", "Pareto_Analysis_CORRECTED.html"),
     ("👥 Customer Segments", "Customer_Segmentation_ARPA_Chart.html"),
     ("🔀 GC vs RC Growth", "GC_RC_Growth_Analysis_Updated (1).html"),
