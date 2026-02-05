@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
-        .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center; }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 30px; text-align: center; }
         .header h1 { font-size: 2.2em; margin-bottom: 8px; font-weight: 600; }
         .header p { font-size: 1em; opacity: 0.95; font-weight: 300; }
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 30px; background: #fafbfc; }
@@ -25,11 +25,11 @@
         .charts-section { padding: 30px; }
         .chart-container { background: white; border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .chart-title { font-size: 1.3em; color: #1e293b; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; }
-        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; margin: 30px; border-radius: 10px; }
+        .insights { background: #1f2937; color: white; padding: 30px; margin: 30px; border-radius: 10px; }
         .insights h2 { font-size: 1.6em; margin-bottom: 20px; font-weight: 600; }
         .insights ul { list-style: none; padding-left: 0; }
         .insights li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 1em; line-height: 1.7; font-weight: 300; }
-        .insights li:before { content: "→"; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        .insights li:before { content: ""; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
         .insights li strong { font-weight: 600; }
         .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: 1fr; } }
@@ -117,7 +117,7 @@
     </div>
     
     <script>
-        const colors = { focus: '#3b82f6', rc: '#8b5cf6', total: '#10b981' };
+        const colors = { focus: '#1e3a8a', rc: '#0891b2', total: '#059669' };
         
         // Monthly Revenue Trend
         new Chart(document.getElementById('monthlyRevenueChart'), {
@@ -164,11 +164,11 @@
                     legend: { display: true, position: 'top' },
                     tooltip: {
                         mode: 'index',
-                        callbacks: { label: context => context.dataset.label + ': ₹' + context.parsed.y.toFixed(1) + 'M' }
+                        callbacks: { label: context => context.dataset.label + ': ' + context.parsed.y.toFixed(1) + 'M' }
                     }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } },
+                    y: { beginAtZero: true, ticks: { callback: value => value + 'M' } },
                     x: { grid: { display: false } }
                 }
             }
@@ -193,7 +193,7 @@
                         callbacks: {
                             label: context => {
                                 const pct = ((context.parsed / 495.2) * 100).toFixed(1);
-                                return context.label + ': ₹' + context.parsed.toFixed(1) + 'M (' + pct + '%)';
+                                return context.label + ': ' + context.parsed.toFixed(1) + 'M (' + pct + '%)';
                             }
                         }
                     }
@@ -220,7 +220,7 @@
                         callbacks: {
                             label: context => {
                                 const pct = ((context.parsed / 495.2) * 100).toFixed(1);
-                                return context.label + ': ₹' + context.parsed.toFixed(1) + 'M (' + pct + '%)';
+                                return context.label + ': ' + context.parsed.toFixed(1) + 'M (' + pct + '%)';
                             }
                         }
                     }

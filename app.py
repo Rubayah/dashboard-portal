@@ -37,10 +37,10 @@ DASH_DIR = BASE_DIR / "dashboards"
 # Dashboard order + mapping
 # -------------------------
 tabs_config = [
-    ("YTD Revenue Analysis", "YTD_Revenue_Chart_Fixed.html"),
+    ("YTD Revenue Analysis", "YTD_Revenue_PROFESSIONAL.html"),
     ("QoQ Revenue Growth", "dashboard.html"),
     ("QoQ NRR (April Cohort)", "nrr.html"),
-    ("MoM Revenue Breakdown", "MoM_Dashboard_PROFESSIONAL.html"),
+    ("MoM Revenue Breakdown", "MoM_Dashboard_PROFESSIONAL (1).html"),
     ("Pareto Analysis", "Pareto_Analysis_CORRECTED.html"),
     ("Customer Segmentation", "Customer_Segmentation_ARPA_Chart.html"),
     ("Focus vs RC Growth", "GC_RC_Growth_Analysis_Updated (1).html"),
