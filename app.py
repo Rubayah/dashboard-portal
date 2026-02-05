@@ -38,8 +38,8 @@ DASH_DIR = BASE_DIR / "dashboards"
 # -------------------------
 tabs_config = [
     ("YTD Revenue Analysis", "YTD_Revenue_PROFESSIONAL.html"),
-    ("QoQ Revenue Growth", "dashboard.html"),
-    ("QoQ NRR (April Cohort)", "nrr.html"),
+    ("QoQ Revenue Growth", "QoQ_Revenue_PROFESSIONAL_CORRECT (4).html"),
+    ("QoQ NRR (April Cohort)", "QoQ_NRR_PROFESSIONAL_CORRECT (2).html"),
     ("MoM Revenue Breakdown", "MoM_Dashboard_PROFESSIONAL (1).html"),
     ("Pareto Analysis", "Pareto_PROFESSIONAL.html"),
     ("Customer Segmentation", "Customer_Segmentation_ARPA_PROFESSIONAL.html"),
