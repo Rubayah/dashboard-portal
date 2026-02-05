@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
         .header h1 { font-size: 2.2em; margin-bottom: 8px; }
         .header p { font-size: 1em; opacity: 0.95; }
         
@@ -30,16 +30,16 @@
         .metric-value { font-size: 2em; font-weight: 700; color: #1e293b; }
         .metric-sub { font-size: 0.85em; color: #64748b; margin-top: 8px; }
         
-        .growth-indicators { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
-        .growth-box { padding: 15px 30px; border-radius: 8px; font-weight: 600; }
+        .growth-indicators { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .growth-box { padding: 10px 15px; border-radius: 8px; font-weight: 600; font-size: 0.85em; text-align: left; background: #f1f5f9; color: #1e293b; line-height: 1.6; }
         .growth-box.positive { background: #d1fae5; color: #065f46; }
         .growth-box.negative { background: #fee2e2; color: #991b1b; }
         
-        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; margin: 30px 0; border-radius: 12px; }
+        .insights { background: #1e293b; color: white; padding: 30px; margin: 30px 0; border-radius: 12px; }
         .insights h2 { font-size: 1.6em; margin-bottom: 20px; font-weight: 600; }
         .insights ul { list-style: none; padding-left: 0; }
         .insights li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 1em; line-height: 1.7; font-weight: 300; }
-        .insights li:before { content: "→"; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        .insights li:before { content: ""; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
         .insights li strong { font-weight: 600; }
         
         @media (max-width: 768px) { .metrics-row { grid-template-columns: 1fr; } }
@@ -53,7 +53,7 @@
         </div>
         
         <div class="section">
-            <div class="section-title total">📊 Total Revenue (ALL Accounts - GC + RC)</div>
+            <div class="section-title total">Total Revenue (ALL Accounts - GC + RC)</div>
             <div class="metrics-row">
                 <div class="metric-box q2">
                     <div class="metric-label">Q2 Total</div>
@@ -73,13 +73,14 @@
             </div>
             <canvas id="totalRevenueChart" height="80"></canvas>
             <div class="growth-indicators">
-                <div class="growth-box positive">Q3 vs Q2: +11.5%</div>
-                <div class="growth-box positive">Q4 vs Q3: +22.6%</div>
+                <div class="growth-box"><small>Focus:</small> Q3 vs Q2: <span style="color:#065f46">+11.7%</span> | Q4 vs Q3: <span style="color:#065f46">+35.0%</span></div>
+                <div class="growth-box"><small>RC:</small> Q3 vs Q2: <span style="color:#065f46">+11.2%</span> | Q4 vs Q3: <span style="color:#065f46">+5.0%</span></div>
+                <div class="growth-box"><small>Total:</small> Q3 vs Q2: <span style="color:#065f46">+11.5%</span> | Q4 vs Q3: <span style="color:#065f46">+22.6%</span></div>
             </div>
         </div>
         
         <div class="section">
-            <div class="section-title product">📦 Product + PS Revenue</div>
+            <div class="section-title product">Product + PS Revenue</div>
             <div class="metrics-row">
                 <div class="metric-box q2">
                     <div class="metric-label">Q2 Total</div>
@@ -99,13 +100,14 @@
             </div>
             <canvas id="productPsChart" height="80"></canvas>
             <div class="growth-indicators">
-                <div class="growth-box positive">Q3 vs Q2: +14.7%</div>
-                <div class="growth-box positive">Q4 vs Q3: +20.4%</div>
+                <div class="growth-box"><small>Focus:</small> Q3 vs Q2: <span style="color:#065f46">+12.9%</span> | Q4 vs Q3: <span style="color:#065f46">+31.1%</span></div>
+                <div class="growth-box"><small>RC:</small> Q3 vs Q2: <span style="color:#065f46">+17.0%</span> | Q4 vs Q3: <span style="color:#065f46">+6.5%</span></div>
+                <div class="growth-box"><small>Total:</small> Q3 vs Q2: <span style="color:#065f46">+14.7%</span> | Q4 vs Q3: <span style="color:#065f46">+20.4%</span></div>
             </div>
         </div>
         
         <div class="section">
-            <div class="section-title consumables">🔧 Consumables Revenue</div>
+            <div class="section-title consumables">Consumables Revenue</div>
             <div class="metrics-row">
                 <div class="metric-box q2">
                     <div class="metric-label">Q2 Total</div>
@@ -125,23 +127,24 @@
             </div>
             <canvas id="consumablesChart" height="80"></canvas>
             <div class="growth-indicators">
-                <div class="growth-box negative">Q3 vs Q2: -8.6%</div>
-                <div class="growth-box positive">Q4 vs Q3: +40.7%</div>
+                <div class="growth-box"><small>Focus:</small> Q3 vs Q2: <span style="color:#065f46">+5.0%</span> | Q4 vs Q3: <span style="color:#065f46">+58.3%</span></div>
+                <div class="growth-box"><small>RC:</small> Q3 vs Q2: <span style="color:#991b1b">-35.4%</span> | Q4 vs Q3: <span style="color:#991b1b">-15.8%</span></div>
+                <div class="growth-box"><small>Total:</small> Q3 vs Q2: <span style="color:#991b1b">-8.6%</span> | Q4 vs Q3: <span style="color:#065f46">+40.7%</span></div>
             </div>
         </div>
         
         <div class="section">
-            <div class="section-title gc">👤 All 17 GC Persons (Sorted by Total Revenue)</div>
+            <div class="section-title gc">All 17 GC Persons (Sorted by Total Revenue)</div>
             <canvas id="gcPersonChart" height="180"></canvas>
         </div>
         
         <div class="section">
-            <div class="section-title rc">👤 All 9 RC Persons (Sorted by Total Revenue)</div>
+            <div class="section-title rc">All 9 RC Persons (Sorted by Total Revenue)</div>
             <canvas id="rcPersonChart" height="130"></canvas>
         </div>
         
         <div class="insights">
-            <h2>📊 Key Revenue Insights</h2>
+            <h2>Key Revenue Insights</h2>
             <ul>
                 <li><strong>Strong Q4 Acceleration:</strong> Total revenue grew from ₹142.2M (Q2) to ₹194.5M (Q4), representing 36.8% growth over two quarters with accelerating momentum (+11.5% Q3, +22.6% Q4).</li>
                 
@@ -173,8 +176,8 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } } },
-                scales: { y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + 'M' } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => value + 'M' } } }
             }
         });
         
@@ -190,8 +193,8 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } } },
-                scales: { y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + 'M' } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => value + 'M' } } }
             }
         });
         
@@ -207,8 +210,8 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.y.toFixed(1) + 'M' } } },
-                scales: { y: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + 'M' } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => value + 'M' } } }
             }
         });
         
@@ -225,8 +228,8 @@
             options: {
                 indexAxis: 'y',
                 responsive: true,
-                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.x.toFixed(2) + 'M' } } },
-                scales: { x: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.x.toFixed(2) + 'M' } } },
+                scales: { x: { beginAtZero: true, ticks: { callback: value => value + 'M' } } }
             }
         });
         
@@ -243,8 +246,8 @@
             options: {
                 indexAxis: 'y',
                 responsive: true,
-                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₹' + ctx.parsed.x.toFixed(2) + 'M' } } },
-                scales: { x: { beginAtZero: true, ticks: { callback: value => '₹' + value + 'M' } } }
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.x.toFixed(2) + 'M' } } },
+                scales: { x: { beginAtZero: true, ticks: { callback: value => value + 'M' } } }
             }
         });
     </script>

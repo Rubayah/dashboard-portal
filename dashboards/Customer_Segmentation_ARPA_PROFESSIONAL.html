@@ -27,11 +27,11 @@
     .chart-container { background:white; border-radius:10px; padding:24px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
     .chart-title { font-size:1.3em; color:#1e293b; margin-bottom:18px; padding-bottom:10px; border-bottom:2px solid #e2e8f0; font-weight:600; }
     .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-    .insights { background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%); color:white; padding:30px; margin:0 30px 30px; border-radius:10px; }
+    .insights { background:#1e293b; color:white; padding:30px; margin:0 30px 30px; border-radius:10px; }
     .insights h2 { font-size:1.5em; margin-bottom:16px; font-weight:600; }
     .insights ul { list-style:none; padding-left:0; }
     .insights li { padding:8px 0; padding-left:24px; position:relative; font-size:0.95em; line-height:1.6; font-weight:300; }
-    .insights li:before { content:"→"; position:absolute; left:0; font-weight:bold; }
+    .insights li:before { content:""; position:absolute; left:0; font-weight:bold; }
     .insights li strong { font-weight:600; }
     @media (max-width:768px) { .two-col { grid-template-columns:1fr; } .metrics-grid { grid-template-columns:1fr 1fr; } }
 </style>
@@ -132,8 +132,8 @@ new Chart(document.getElementById('countChart'), {
     data: {
         labels: buckets,
         datasets: [
-            { label: 'MEA Focus', data: focusCount, backgroundColor: '#3b82f6cc', borderColor: '#2563EB', borderWidth: 1.5 },
-            { label: 'RC MEA',    data: rcCount,    backgroundColor: '#8b5cf6cc', borderColor: '#7c3aed', borderWidth: 1.5 }
+            { label: 'MEA Focus', data: focusCount, backgroundColor: '#1e3a8acc', borderColor: '#1e3a8a', borderWidth: 1.5 },
+            { label: 'RC MEA',    data: rcCount,    backgroundColor: '#14b8a6cc', borderColor: '#14b8a6', borderWidth: 1.5 }
         ]
     },
     options: {
@@ -158,8 +158,8 @@ new Chart(document.getElementById('revenueChart'), {
     data: {
         labels: buckets,
         datasets: [
-            { label: 'MEA Focus', data: focusRev, backgroundColor: '#3b82f6cc', borderColor: '#2563EB', borderWidth: 1.5 },
-            { label: 'RC MEA',    data: rcRev,    backgroundColor: '#8b5cf6cc', borderColor: '#7c3aed', borderWidth: 1.5 }
+            { label: 'MEA Focus', data: focusRev, backgroundColor: '#1e3a8acc', borderColor: '#1e3a8a', borderWidth: 1.5 },
+            { label: 'RC MEA',    data: rcRev,    backgroundColor: '#14b8a6cc', borderColor: '#14b8a6', borderWidth: 1.5 }
         ]
     },
     options: {

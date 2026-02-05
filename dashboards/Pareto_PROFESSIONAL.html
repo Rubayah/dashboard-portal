@@ -23,11 +23,11 @@
         .charts-section { padding: 30px; }
         .chart-container { background: white; border-radius: 10px; padding: 24px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .chart-title { font-size: 1.4em; color: #1e293b; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; }
-        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; margin: 30px; border-radius: 10px; }
+        .insights { background: #1e293b; color: white; padding: 30px; margin: 30px; border-radius: 10px; }
         .insights h2 { font-size: 1.6em; margin-bottom: 20px; font-weight: 600; }
         .insights ul { list-style: none; padding-left: 0; }
         .insights li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 1em; line-height: 1.7; font-weight: 300; }
-        .insights li:before { content: "→"; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        .insights li:before { content: ""; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
         .insights li strong { font-weight: 600; }
     </style>
 </head>
@@ -194,7 +194,7 @@
                                 if (context.datasetIndex === 0 || context.datasetIndex === 1) {
                                     const val = context.parsed.y;
                                     if (val === null) return null;
-                                    return 'Revenue: ₹' + val.toFixed(2) + 'M';
+                                    return 'Revenue: ' + val.toFixed(2) + 'M';
                                 }
                                 if (context.datasetIndex === 2) return 'Cumulative: ' + context.parsed.y.toFixed(1) + '%';
                                 return null;
