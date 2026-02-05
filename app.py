@@ -42,7 +42,7 @@ tabs_config = [
     ("QoQ NRR (April Cohort)", "nrr.html"),
     ("MoM Revenue Breakdown", "MoM_Dashboard_PROFESSIONAL (1).html"),
     ("Pareto Analysis", "Pareto_PROFESSIONAL.html"),
-    ("Customer Segmentation", "dashboards/Customer_Segmentation_ARPA_PROFESSIONAL.html"),
+    ("Customer Segmentation", "dashboards/dashboards/Customer_Segmentation_ARPA_PROFESSIONAL.html"),
     ("Focus vs RC Growth", "GC_RC_Growth_Analysis_Updated (1).html"),
 ]
 
