@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; padding: 20px; overflow-x: hidden; }
         .container { max-width: 1400px; margin: 0 auto; overflow: visible; }
-        .header { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2); }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2); }
         .header h1 { font-size: 2.2em; margin-bottom: 8px; font-weight: 600; }
         .header p { font-size: 1em; opacity: 0.95; font-weight: 300; }
         
@@ -32,7 +32,7 @@
         .metric-value { font-size: 2em; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
         .metric-sub { font-size: 0.85em; color: #64748b; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; }
         
-        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; margin: 30px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .insights { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 30px; margin: 30px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
         .insights h2 { font-size: 1.6em; margin-bottom: 20px; font-weight: 600; }
         .insights ul { list-style: none; padding-left: 0; }
         .insights li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 1em; line-height: 1.7; font-weight: 300; }
@@ -45,13 +45,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 MoM Revenue Dashboard</h1>
+            <h1>MoM Revenue Dashboard</h1>
             <p>April - December 2025 | Cohort Attribution & Growth Analysis</p>
         </div>
         
         <!-- MONTHLY REVENUE GROWTH OVERVIEW -->
         <div class="section">
-            <div class="section-title total">📈 Monthly Revenue Growth Overview</div>
+            <div class="section-title total">Monthly Revenue Growth Overview</div>
             <canvas id="monthlyGrowthChart" height="80"></canvas>
         </div>
         
@@ -78,7 +78,7 @@
                 <div class="metric-box growth">
                     <div class="metric-label">Total Growth</div>
                     <div class="metric-value">+52.6%</div>
-                    <div class="metric-sub">45.12M → 68.86M<br>+23.74M added</div>
+                    <div class="metric-sub">₹45.1M → ₹68.9M<br>+₹23.7M added</div>
                 </div>
             </div>
             
@@ -111,7 +111,7 @@
         
         <!-- INSIGHTS -->
         <div class="insights">
-            <h2>📊 Key MoM Insights</h2>
+            <h2>Key MoM Insights</h2>
             <ul>
                 <li><strong>Strong Incremental Growth:</strong> Revenue grew 52.6% from 45.12M (April) to 68.86M (December), driven by stable April cohort (45.80M in Dec) and 54 gross new accounts (19 Focus + 35 RC) contributing 7.21M cumulatively.</li>
                 
@@ -130,15 +130,15 @@
     
     <script>
         const colors = {
-            aprilCohort: '#3b82f6',
-            mayJoiners: '#10b981',
-            junJoiners: '#14b8a6',
-            julJoiners: '#8b5cf6',
-            augJoiners: '#ec4899',
-            sepJoiners: '#f59e0b',
-            octJoiners: '#ef4444',
-            novJoiners: '#06b6d4',
-            decJoiners: '#84cc16'
+            aprilCohort: '#1e3a8a',  // Navy blue - April Baseline
+            mayJoiners: '#2563eb',   // Blue - Q2
+            junJoiners: '#3b82f6',   // Light blue - Q2
+            julJoiners: '#0891b2',   // Teal - Q3
+            augJoiners: '#06b6d4',   // Cyan - Q3
+            sepJoiners: '#22d3ee',   // Light cyan - Q3
+            octJoiners: '#059669',   // Emerald green - Q4
+            novJoiners: '#10b981',   // Green - Q4
+            decJoiners: '#34d399'    // Light green - Q4
         };
         
         const months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -313,7 +313,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'May (6 new)',
+                        label: 'Q2: May (6)',
                         data: mayJoiners,
                         backgroundColor: colors.mayJoiners,
                         borderWidth: 0,
@@ -321,7 +321,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'June (2 new)',
+                        label: 'Q2: June (2)',
                         data: junJoiners,
                         backgroundColor: colors.junJoiners,
                         borderWidth: 0,
@@ -329,7 +329,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'July (8 new)',
+                        label: 'Q3: July (8)',
                         data: julJoiners,
                         backgroundColor: colors.julJoiners,
                         borderWidth: 0,
@@ -337,7 +337,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'August (6 new)',
+                        label: 'Q3: August (6)',
                         data: augJoiners,
                         backgroundColor: colors.augJoiners,
                         borderWidth: 0,
@@ -345,7 +345,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'September (10 new)',
+                        label: 'Q3: September (10)',
                         data: sepJoiners,
                         backgroundColor: colors.sepJoiners,
                         borderWidth: 0,
@@ -353,7 +353,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'October (5 new)',
+                        label: 'Q4: October (5)',
                         data: octJoiners,
                         backgroundColor: colors.octJoiners,
                         borderWidth: 0,
@@ -361,7 +361,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'November (4 new)',
+                        label: 'Q4: November (4)',
                         data: novJoiners,
                         backgroundColor: colors.novJoiners,
                         borderWidth: 0,
@@ -369,7 +369,7 @@
                         borderSkipped: false
                     },
                     {
-                        label: 'December (13 new)',
+                        label: 'Q4: December (13)',
                         data: decJoiners,
                         backgroundColor: colors.decJoiners,
                         borderWidth: 0,
