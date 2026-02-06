@@ -151,15 +151,15 @@
         const meaTotal = [26.47, 28.92, 27.81, 26.80, 30.53, 35.61, 37.85, 41.24, 46.44];
         const rcTotal = [18.65, 20.04, 20.31, 21.27, 22.13, 22.20, 23.00, 23.51, 22.42];
         
-        // Incremental new joiners persisting through months (calculated to match totalRevenue bar heights)
-        const mayJoiners = [0, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57];
-        const junJoiners = [0, 0, 0.71, 0.71, 0.71, 0.71, 0.71, 0.71, 0.71];
-        const julJoiners = [0, 0, 0, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49];
-        const augJoiners = [0, 0, 0, 0, 3.62, 3.62, 3.62, 3.62, 3.62];
-        const sepJoiners = [0, 0, 0, 0, 0, 3.70, 3.70, 3.70, 3.70];
-        const octJoiners = [0, 0, 0, 0, 0, 0, 2.83, 2.83, 2.83];
-        const novJoiners = [0, 0, 0, 0, 0, 0, 0, 3.61, 3.61];
-        const decJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 6.53];
+        // Incremental new joiners persisting through months (each month's joiners stay in all future months)
+        const mayJoiners = [0, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55];
+        const junJoiners = [0, 0, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07];
+        const julJoiners = [0, 0, 0, 1.33, 1.33, 1.33, 1.33, 1.33, 1.33];
+        const augJoiners = [0, 0, 0, 0, 0.73, 0.73, 0.73, 0.73, 0.73];
+        const sepJoiners = [0, 0, 0, 0, 0, 2.53, 2.53, 2.53, 2.53];
+        const octJoiners = [0, 0, 0, 0, 0, 0, 0.52, 0.52, 0.52];
+        const novJoiners = [0, 0, 0, 0, 0, 0, 0, 0.64, 0.64];
+        const decJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.83];
         
         // Joiner counts for tooltip (Focus + RC in brackets)
         // Format: [Focus joiners, RC joiners, Total joiners]
@@ -174,17 +174,30 @@
             dec: [2, 11, 13]
         };
         
-        // Monthly new joiner revenue (New Accounts Total from screenshot) in 
+        // MONTHLY new joiner revenue for HOVER DISPLAY (not cumulative - just that month's value)
+        const newAccountsRevenueMonthly = [
+            0,              // April (baseline)
+            545833.60,      // May: 0.55M
+            74032.74,       // June: 0.07M
+            1333736.26,     // July: 1.33M
+            733618.82,      // August: 0.73M
+            2528181.85,     // September: 2.53M
+            520762.01,      // October: 0.52M
+            640888.02,      // November: 0.64M
+            832923.64       // December: 0.83M
+        ];
+        
+        // CUMULATIVE new joiner revenue (New Accounts Total - cumulative from May onwards)
         const newAccountsRevenue = [
             0,              // April (baseline)
-            545833.6001,    // May
-            74032.74214,    // June
-            1333736.261,    // July
-            733618.8163,    // August
-            2528181.846,    // September
-            520762.0115,    // October
-            640888.015,     // November
-            832923.6395     // December
+            545833.60,      // May cumulative: 0.55M
+            619866.34,      // June cumulative: 0.55M + 0.07M = 0.62M
+            1953602.60,     // July cumulative: 0.62M + 1.33M = 1.95M
+            2687221.42,     // August cumulative: 1.95M + 0.73M = 2.69M
+            5215403.27,     // September cumulative: 2.69M + 2.53M = 5.22M
+            5736165.28,     // October cumulative: 5.22M + 0.52M = 5.74M
+            6377053.29,     // November cumulative: 5.74M + 0.64M = 6.38M
+            7209976.93      // December cumulative: 6.38M + 0.83M = 7.21M
         ];
         
         // Product+PS data (from updated table - Screenshot 2026-02-03 1:44:04 PM)
@@ -195,18 +208,31 @@
         const productFocus = [22.92, 24.52, 22.90, 23.22, 27.27, 28.95, 32.31, 34.27, 37.59];
         const productRC = [16.94, 17.92, 17.63, 19.25, 21.08, 21.06, 22.01, 22.11, 21.26];
         
-        // New Accounts for Product+PS (cumulative persisting amounts)
-        const productNewAccounts = [0, 0.30214, 0.06575, 0.88708, 1.91197, 1.13108, 2.73762, 0.15395, 0.64309];
+        // MONTHLY Product+PS values for HOVER DISPLAY (not cumulative)
+        const productNewAccountsMonthly = [0, 0.72492, 0.11577, 0.88708, 1.91197, 1.11438, 0.53176, 0.15395, 0.63192];
+        
+        // CUMULATIVE New Accounts for Product+PS (cumulative persisting amounts)
+        const productNewAccounts = [
+            0,        // April baseline
+            0.72492,  // May cumulative
+            0.84069,  // June cumulative (May + June)
+            1.72777,  // July cumulative
+            3.63974,  // August cumulative
+            4.75412,  // September cumulative
+            5.28588,  // October cumulative
+            5.43983,  // November cumulative
+            6.07175   // December cumulative
+        ];
         
         // Correct incremental joiners for Product+PS - each month's new accounts persist
-        const productMayJoiners = [0, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214, 0.30214];
-        const productJunJoiners = [0, 0, 0.06575, 0.06575, 0.06575, 0.06575, 0.06575, 0.06575, 0.06575];
+        const productMayJoiners = [0, 0.72492, 0.72492, 0.72492, 0.72492, 0.72492, 0.72492, 0.72492, 0.72492];
+        const productJunJoiners = [0, 0, 0.11577, 0.11577, 0.11577, 0.11577, 0.11577, 0.11577, 0.11577];
         const productJulJoiners = [0, 0, 0, 0.88708, 0.88708, 0.88708, 0.88708, 0.88708, 0.88708];
         const productAugJoiners = [0, 0, 0, 0, 1.91197, 1.91197, 1.91197, 1.91197, 1.91197];
-        const productSepJoiners = [0, 0, 0, 0, 0, 1.13108, 1.13108, 1.13108, 1.13108];
-        const productOctJoiners = [0, 0, 0, 0, 0, 0, 2.73762, 2.73762, 2.73762];
+        const productSepJoiners = [0, 0, 0, 0, 0, 1.11438, 1.11438, 1.11438, 1.11438];
+        const productOctJoiners = [0, 0, 0, 0, 0, 0, 0.53176, 0.53176, 0.53176];
         const productNovJoiners = [0, 0, 0, 0, 0, 0, 0, 0.15395, 0.15395];
-        const productDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.64309];
+        const productDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.63192];
         
         // Consumables data (from updated table - Screenshot 2026-02-03 1:05:54 PM)
         const consumablesTotal = [5.26, 6.52, 7.58, 5.60, 4.31, 7.80, 6.52, 8.37, 10.01];
@@ -216,18 +242,31 @@
         const consumablesFocus = [3.56, 4.39, 4.91, 3.58, 3.27, 6.66, 5.54, 6.97, 8.86];
         const consumablesRC = [1.71, 2.13, 2.68, 2.02, 1.04, 1.14, 0.98, 1.40, 1.16];
         
-        // New Accounts for Consumables (cumulative persisting amounts)
-        const consumablesNewAccounts = [0, 0.15458, 0.00470, 0.04053, 0.02247, 0.00000, 0.04794, 0.11669, 0.20065];
+        // MONTHLY Consumables values for HOVER DISPLAY (not cumulative)
+        const consumablesNewAccountsMonthly = [0, 0.20969, 0.00000, 0.01577, 0.02479, 0.01162, 0.02665, 0.57189, 0.20463];
+        
+        // CUMULATIVE New Accounts for Consumables (cumulative persisting amounts)
+        const consumablesNewAccounts = [
+            0,        // April baseline
+            0.20969,  // May cumulative
+            0.20969,  // June cumulative (May + June - June had 0 consumables)
+            0.22546,  // July cumulative
+            0.25025,  // August cumulative
+            0.26187,  // September cumulative
+            0.28852,  // October cumulative
+            0.86041,  // November cumulative
+            1.06504   // December cumulative
+        ];
         
         // Correct incremental joiners for Consumables - each month's new accounts persist
-        const consumablesMayJoiners = [0, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458, 0.15458];
-        const consumablesJunJoiners = [0, 0, 0.00470, 0.00470, 0.00470, 0.00470, 0.00470, 0.00470, 0.00470];
-        const consumablesJulJoiners = [0, 0, 0, 0.04053, 0.04053, 0.04053, 0.04053, 0.04053, 0.04053];
-        const consumablesAugJoiners = [0, 0, 0, 0, 0.02247, 0.02247, 0.02247, 0.02247, 0.02247];
-        const consumablesSepJoiners = [0, 0, 0, 0, 0, 0.00000, 0.00000, 0.00000, 0.00000];
-        const consumablesOctJoiners = [0, 0, 0, 0, 0, 0, 0.04794, 0.04794, 0.04794];
-        const consumablesNovJoiners = [0, 0, 0, 0, 0, 0, 0, 0.11669, 0.11669];
-        const consumablesDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.20065];
+        const consumablesMayJoiners = [0, 0.20969, 0.20969, 0.20969, 0.20969, 0.20969, 0.20969, 0.20969, 0.20969];
+        const consumablesJunJoiners = [0, 0, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000];
+        const consumablesJulJoiners = [0, 0, 0, 0.01577, 0.01577, 0.01577, 0.01577, 0.01577, 0.01577];
+        const consumablesAugJoiners = [0, 0, 0, 0, 0.02479, 0.02479, 0.02479, 0.02479, 0.02479];
+        const consumablesSepJoiners = [0, 0, 0, 0, 0, 0.01162, 0.01162, 0.01162, 0.01162];
+        const consumablesOctJoiners = [0, 0, 0, 0, 0, 0, 0.02665, 0.02665, 0.02665];
+        const consumablesNovJoiners = [0, 0, 0, 0, 0, 0, 0, 0.57189, 0.57189];
+        const consumablesDecJoiners = [0, 0, 0, 0, 0, 0, 0, 0, 0.20463];
         
         // GC Person data
         const gcPersons = ['Princy Choudhary', 'Sidharth Sanjeev', 'Aditi Jannu', 'Rohan Ratna', 'Ankita Shinde', 'Mark Brian', 'Rishika Sharma', 'Saurabh Yadav', 'Saharsh Jhawar', 'Rajas Bhagat', 'Vipin Aniyath', 'Aarushi Handa'];
@@ -283,6 +322,20 @@
                         backgroundColor: 'rgba(30, 41, 59, 1)',
                         padding: 14,
                         callbacks: {
+                            title: function(items) {
+                                const idx = items[0].dataIndex;
+                                const lines = [items[0].label + ' 2025'];
+                                
+                                // Add New Accounts (monthly) and Total (cumulative) for May onwards
+                                if (idx > 0) {
+                                    const newAccMonthly = newAccountsRevenueMonthly[idx];
+                                    const newAccTotal = newAccountsRevenue[idx];
+                                    lines.push('New Accounts: ' + (newAccMonthly / 1000000).toFixed(2) + 'M');
+                                    lines.push('New Accounts Total: ' + (newAccTotal / 1000000).toFixed(2) + 'M');
+                                }
+                                
+                                return lines;
+                            },
                             label: function(context) {
                                 if (context.datasetIndex === 0) return 'Revenue: ' + context.parsed.y.toFixed(2) + 'M';
                                 else { if (context.parsed.y === null) return null; return 'Growth: ' + (context.parsed.y > 0 ? '+' : '') + context.parsed.y.toFixed(2) + '%'; }
@@ -434,16 +487,11 @@
                                 
                                 // Add new accounts revenue for May onwards
                                 if (idx > 0) {
-                                    const newAccRev = newAccountsRevenue[idx];
-                                    
-                                    // Format revenue: always use K
-                                    const formatRevenue = (val) => {
-                                        if (val === 0) return '0';
-                                        return '' + (val / 1000).toFixed(1) + 'K';
-                                    };
-                                    
+                                    const newAccMonthly = newAccountsRevenueMonthly[idx];
+                                    const newAccCumulative = newAccountsRevenue[idx];
                                     lines.push('');
-                                    lines.push('New Accounts: ' + formatRevenue(newAccRev));
+                                    lines.push('New Accounts: ' + (newAccMonthly / 1000000).toFixed(2) + 'M');
+                                    lines.push('New Accounts Total: ' + (newAccCumulative / 1000000).toFixed(2) + 'M');
                                 }
                                 
                                 return lines;
@@ -629,12 +677,10 @@
                                     'April Baseline: ' + productCohort[idx].toFixed(2) + 'M'
                                 ];
                                 if (idx > 0) {
-                                    const newAcc = productNewAccounts[idx];
-                                    if (newAcc < 1) {
-                                        lines.push('New Accounts: ' + (newAcc * 1000).toFixed(0) + 'K');
-                                    } else {
-                                        lines.push('New Accounts: ' + newAcc.toFixed(2) + 'M');
-                                    }
+                                    const newAccMonthly = productNewAccountsMonthly[idx];
+                                    const newAccCumulative = productNewAccounts[idx];
+                                    lines.push('New Accounts: ' + newAccMonthly.toFixed(2) + 'M');
+                                    lines.push('New Accounts Total: ' + newAccCumulative.toFixed(2) + 'M');
                                 }
                                 return lines;
                             },
@@ -813,16 +859,10 @@
                                     'April Baseline: ' + consumablesCohort[idx].toFixed(2) + 'M'
                                 ];
                                 if (idx > 0) {
-                                    const newAcc = consumablesNewAccounts[idx];
-                                    if (newAcc < 0.001 && newAcc > 0) {
-                                        lines.push('New Accounts: ' + (newAcc * 1000).toFixed(0) + 'K');
-                                    } else if (newAcc < 1) {
-                                        lines.push('New Accounts: ' + (newAcc * 1000).toFixed(0) + 'K');
-                                    } else if (newAcc === 0) {
-                                        lines.push('New Accounts: 0.00');
-                                    } else {
-                                        lines.push('New Accounts: ' + newAcc.toFixed(2) + 'M');
-                                    }
+                                    const newAccMonthly = consumablesNewAccountsMonthly[idx];
+                                    const newAccCumulative = consumablesNewAccounts[idx];
+                                    lines.push('New Accounts: ' + newAccMonthly.toFixed(2) + 'M');
+                                    lines.push('New Accounts Total: ' + newAccCumulative.toFixed(2) + 'M');
                                 }
                                 return lines;
                             },
